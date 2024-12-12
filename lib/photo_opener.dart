@@ -22,6 +22,7 @@ onOpenPhoto({
   PageController? pageController,
   ValueChanged<int>? onPageChange,
   TextStyle? topTextStyle,
+  double? leftPadding,
 }) {
   double barrierColor = 1;
   bool isOpen = true;
@@ -150,7 +151,7 @@ onOpenPhoto({
                           padding: EdgeInsets.only(
                               top: MediaQuery.of(context).padding.top +
                                   (Platform.isAndroid ? 10.h : 0),
-                              left: 21.w,
+                              left:leftPadding?? 21.w,
                               right: 21.w,
                               bottom: 5.h),
                           child: closeButton ??

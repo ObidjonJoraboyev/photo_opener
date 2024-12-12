@@ -27,19 +27,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_opener/photo_opener.dart';
 
-class PaymentAccountScreen extends StatefulWidget {
-  const PaymentAccountScreen({super.key});
+class PhotoOpenerExample extends StatefulWidget {
+  const PhotoOpenerExample({super.key});
 
   @override
-  State<PaymentAccountScreen> createState() => _PaymentAccountScreenState();
+  State<PhotoOpenerExample> createState() => _PhotoOpenerExampleState();
 }
 
-class _PaymentAccountScreenState extends State<PaymentAccountScreen> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
+class _PhotoOpenerExampleState extends State<PhotoOpenerExample> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -90,5 +85,6 @@ class _PaymentAccountScreenState extends State<PaymentAccountScreen> {
     );
   }
 }
+
 
 ```
