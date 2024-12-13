@@ -1,6 +1,6 @@
 name: photo_opener
 description: "This package can open your photos just like in Telegram"
-version: 0.0.6
+version: 0.1.0
 homepage: https://github.com/ObidjonJoraboyev/photo_opener
 
 environment:

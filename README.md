@@ -20,7 +20,11 @@ This package allows you to open your images on a large screen and zoom in or out
 
 
 ## Usage
-![Demo](https://github.com/ObidjonJoraboyev/photo_opener/blob/main/gif/example.gif)
+
+![Demo](https://raw.githubusercontent.com/ObidjonJoraboyev/photo_opener/main/gif/example.gif)
+
+
+
 
 ```dart
 import 'package:flutter/cupertino.dart';
@@ -53,26 +57,28 @@ class _PhotoOpenerExampleState extends State<PhotoOpenerExample> {
                 secondaryColor: Colors.black,
                 backgroundColor: Colors.black,
                 pageController: pageController,
-                onPageChange: (newPage) {
-                  print(newPage);
-                },
+                onPageChange: (newPage) {},
                 minScale: 1,
                 maxScale: 5,
                 loaderColor: Colors.red,
+                leftPadding: 20,
+                isNetwork: false,
                 topTextStyle: const TextStyle(
-                    color: CupertinoColors.white, fontWeight: FontWeight.w600),
+                  color: CupertinoColors.white,
+                  fontWeight: FontWeight.w600,
+                ),
                 images: [
-                  "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Big_Ben_2007-1.jpg/1200px-Big_Ben_2007-1.jpg",
-                  "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Big_Ben_2007-1.jpg/1200px-Big_Ben_2007-1.jpg",
-                  "https://media.istockphoto.com/id/510469242/photo/business-towers.jpg?b=1&s=612x612&w=0&k=20&c=4rJMUURzWnASVu2HTg6C25_jz0ktq3NzAcq5NKuIExE="
+                  "assets/images/example_1.png",
+                  "assets/images/example_2.png",
+                  "assets/images/example_3.png",
                 ],
               );
             },
             child: Center(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(24),
-                child: Image.network(
-                  "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Big_Ben_2007-1.jpg/1200px-Big_Ben_2007-1.jpg",
+                child: Image.asset(
+                  "assets/images/example_1.png",
                   width: 300,
                   height: 300,
                   fit: BoxFit.cover,
