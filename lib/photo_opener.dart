@@ -22,7 +22,9 @@ onOpenPhoto(
       ValueChanged<int>? onPageChange,
       TextStyle? topTextStyle,
       double? leftPadding,
-      bool isNetwork = true}) {
+      bool isNetwork = true,
+      int initialIndex = 0,
+      VoidCallback? onClose}) {
   double barrierColor = 1;
   bool isOpen = true;
   double height = MediaQuery.sizeOf(context).height;
@@ -38,11 +40,19 @@ onOpenPhoto(
   isOpen = true;
   currentPage = 1;
   photoController.reset();
+
   showDialog(
       useSafeArea: false,
       barrierColor: Colors.transparent,
       context: context,
       builder: (context) {
+        Future.microtask(() async {
+          pageCtrl.jumpToPage(initialIndex);
+          scrollController.animateTo(
+              initialIndex * (38.sp + (12.w / images.length)),
+              duration: const Duration(microseconds: 300),
+              curve: Curves.easeInOut);
+        });
         return StatefulBuilder(builder: (context, setState) {
           return Container(
             height: MediaQuery.sizeOf(context).height,
@@ -55,7 +65,6 @@ onOpenPhoto(
               onTap: () async {
                 isOpen = !isOpen;
                 setState(() {});
-
                 !isOpen
                     ? SystemChrome.setEnabledSystemUIMode(
                     SystemUiMode.immersive)
@@ -86,6 +95,7 @@ onOpenPhoto(
                       scrollController.dispose();
                       pageCtrl.dispose();
                       if (!context.mounted) return;
+                      onClose?.call();
                       Navigator.pop(context);
                     },
                     direction: state == PhotoViewScaleState.initial ||
@@ -101,14 +111,10 @@ onOpenPhoto(
                         onPageChanged: (v) async {
                           if (scrollController.positions.isNotEmpty) {
                             if (currentIndex < v) {
-                              (scrollController.offset +
-                                  38.sp +
-                                  (12.w / (images.length - 1))) <
+                              v * (38.sp + (12.w / images.length)) <
                                   scrollController.position.maxScrollExtent
                                   ? scrollController.animateTo(
-                                scrollController.offset +
-                                    (38.sp +
-                                        (12.w / (images.length - 1))),
+                                v * (38.sp + (12.w / images.length)),
                                 duration:
                                 const Duration(milliseconds: 300),
                                 curve: Curves.easeInOut,
@@ -120,14 +126,10 @@ onOpenPhoto(
                                 curve: Curves.easeInOut,
                               );
                             } else if (currentIndex > v) {
-                              scrollController.offset -
-                                  38.sp -
-                                  (12.w / images.length) >
+                              v * (38.sp + (12.w / images.length)) >
                                   scrollController.position.minScrollExtent
                                   ? scrollController.animateTo(
-                                scrollController.offset -
-                                    38.sp -
-                                    (12.w / images.length),
+                                v * (38.sp + (12.w / images.length)),
                                 duration:
                                 const Duration(milliseconds: 300),
                                 curve: Curves.easeInOut,
@@ -157,15 +159,14 @@ onOpenPhoto(
                           state = v;
                           setState(() {});
                         },
-                        allowImplicitScrolling: true,
                         scrollPhysics: const BouncingScrollPhysics(
                             parent: AlwaysScrollableScrollPhysics()),
                         builder: (BuildContext context, int index) {
                           return PhotoViewGalleryPageOptions(
                             scaleStateController: photoController,
-                            imageProvider: isNetwork
-                                ? NetworkImage(images[index])
-                                : AssetImage(images[index]),
+                            imageProvider: !isNetwork
+                                ? AssetImage(images[index])
+                                : NetworkImage(images[index]),
                             maxScale: PhotoViewComputedScale.contained *
                                 (maxScale ?? 5),
                             initialScale: PhotoViewComputedScale.contained * 1,
@@ -193,7 +194,7 @@ onOpenPhoto(
                     ),
                   ),
                   AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 100),
+                    duration: const Duration(milliseconds: 200),
                     transitionBuilder: (child, animation) {
                       return FadeTransition(
                         opacity: animation,
@@ -221,16 +222,20 @@ onOpenPhoto(
                                 children: [
                                   GestureDetector(
                                     onTap: () {
+                                      onClose?.call();
                                       Navigator.pop(context);
                                     },
                                     child: Row(
                                       children: [
-                                        const Icon(CupertinoIcons.back),
+                                        const Icon(CupertinoIcons.back,
+                                            color: CupertinoColors.white),
                                         Text(
                                           closeText ?? "Back",
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleMedium,
+                                          style: TextStyle(
+                                              color:
+                                              CupertinoColors.white,
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 14.sp),
                                         )
                                       ],
                                     ),
@@ -243,7 +248,7 @@ onOpenPhoto(
                         : const SizedBox(),
                   ),
                   AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 100),
+                    duration: const Duration(milliseconds: 200),
                     transitionBuilder: (child, animation) {
                       return FadeTransition(
                         opacity: animation,
@@ -285,7 +290,7 @@ onOpenPhoto(
                           child: child,
                         );
                       },
-                      duration: const Duration(milliseconds: 100),
+                      duration: const Duration(milliseconds: 200),
                       child: isOpen
                           ? Opacity(
                         opacity: barrierColor,
@@ -327,7 +332,16 @@ onOpenPhoto(
                                             horizontal: 2.w,
                                           ),
                                           child: GestureDetector(
-                                            onTap: () {},
+                                            onTap: () async {
+                                              await Future.delayed(
+                                                const Duration(
+                                                  milliseconds: 20,
+                                                ),
+                                              );
+                                              pageCtrl.jumpToPage(
+                                                index,
+                                              );
+                                            },
                                             child: ClipRRect(
                                               borderRadius:
                                               BorderRadius.circular(4.r),
@@ -359,7 +373,7 @@ onOpenPhoto(
                                       width: MediaQuery.sizeOf(context)
                                           .width /
                                           2 -
-                                          23.5.w),
+                                          23.5.w)
                                 ],
                               ),
                             ),

@@ -63,6 +63,7 @@ class _PhotoOpenerExampleState extends State<PhotoOpenerExample> {
                 loaderColor: Colors.red,
                 leftPadding: 20,
                 isNetwork: false,
+                initialIndex: 2
                 topTextStyle: const TextStyle(
                   color: CupertinoColors.white,
                   fontWeight: FontWeight.w600,
