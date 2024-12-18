@@ -4,43 +4,41 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:photo_opener/extensions/screen_util.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 
 onOpenPhoto(
     {required BuildContext context,
-      required List<String> images,
-      Widget? closeButton,
-      String? closeText,
-      Color? backgroundColor,
-      Color? secondaryColor,
-      Color? loaderColor,
-      double? maxScale,
-      double? minScale,
-      PageController? pageController,
-      ValueChanged<int>? onPageChange,
-      TextStyle? topTextStyle,
-      double? leftPadding,
-      bool isNetwork = true,
-      int initialIndex = 0,
-      VoidCallback? onClose}) {
+    required List<String> images,
+    Widget? closeButton,
+    String? closeText,
+    Color? backgroundColor,
+    Color? secondaryColor,
+    Color? loaderColor,
+    double? maxScale,
+    double? minScale,
+    PageController? pageController,
+    ValueChanged<int>? onPageChange,
+    TextStyle? topTextStyle,
+    double? leftPadding,
+    bool isNetwork = true,
+    int initialIndex = 0}) {
   double barrierColor = 1;
   bool isOpen = true;
-  double height = MediaQuery.sizeOf(context).height;
-  double width = MediaQuery.sizeOf(context).width;
+  double fullHeight = MediaQuery.sizeOf(context).height;
+  double fullWidth = MediaQuery.sizeOf(context).width;
   PhotoViewScaleState state = PhotoViewScaleState.initial;
   final PageController pageCtrl = pageController ?? PageController();
   int currentPage = 1;
   int currentIndex = 0;
   PhotoViewScaleStateController photoController =
-  PhotoViewScaleStateController();
+      PhotoViewScaleStateController();
   ScrollController scrollController = ScrollController();
 
   isOpen = true;
   currentPage = 1;
   photoController.reset();
-
   showDialog(
       useSafeArea: false,
       barrierColor: Colors.transparent,
@@ -54,12 +52,14 @@ onOpenPhoto(
               curve: Curves.easeInOut);
         });
         return StatefulBuilder(builder: (context, setState) {
+          width = MediaQuery.sizeOf(context).width;
+          height = MediaQuery.sizeOf(context).height;
           return Container(
             height: MediaQuery.sizeOf(context).height,
             decoration: BoxDecoration(
               color: backgroundColor != null
-                  ? backgroundColor.withOpacity(barrierColor)
-                  : Colors.black.withOpacity(barrierColor),
+                  ? backgroundColor.withAlpha((barrierColor * 255).toInt())
+                  : Colors.black.withAlpha((barrierColor * 255).toInt()),
             ),
             child: GestureDetector(
               onTap: () async {
@@ -67,9 +67,9 @@ onOpenPhoto(
                 setState(() {});
                 !isOpen
                     ? SystemChrome.setEnabledSystemUIMode(
-                    SystemUiMode.immersive)
+                        SystemUiMode.immersive)
                     : SystemChrome.setEnabledSystemUIMode(
-                    SystemUiMode.edgeToEdge);
+                        SystemUiMode.edgeToEdge);
 
                 await Future.delayed(const Duration(milliseconds: 20));
                 if (scrollController.positions.isNotEmpty && isOpen) {
@@ -83,7 +83,7 @@ onOpenPhoto(
                   Dismissible(
                     onUpdate: (v) {
                       barrierColor =
-                      (1 - v.progress * 4) >= 0 ? (1 - v.progress * 4) : 0;
+                          (1 - v.progress * 4) >= 0 ? (1 - v.progress * 4) : 0;
                       setState(() {});
                     },
                     movementDuration: const Duration(milliseconds: 500),
@@ -95,51 +95,50 @@ onOpenPhoto(
                       scrollController.dispose();
                       pageCtrl.dispose();
                       if (!context.mounted) return;
-                      onClose?.call();
                       Navigator.pop(context);
                     },
                     direction: state == PhotoViewScaleState.initial ||
-                        state == PhotoViewScaleState.originalSize ||
-                        state == PhotoViewScaleState.covering
+                            state == PhotoViewScaleState.originalSize ||
+                            state == PhotoViewScaleState.covering
                         ? DismissDirection.vertical
                         : DismissDirection.none,
                     key: const Key("value"),
                     child: SizedBox(
-                      height: height,
+                      height: fullHeight,
                       child: PhotoViewGallery.builder(
                         pageController: pageCtrl,
                         onPageChanged: (v) async {
                           if (scrollController.positions.isNotEmpty) {
                             if (currentIndex < v) {
                               v * (38.sp + (12.w / images.length)) <
-                                  scrollController.position.maxScrollExtent
+                                      scrollController.position.maxScrollExtent
                                   ? scrollController.animateTo(
-                                v * (38.sp + (12.w / images.length)),
-                                duration:
-                                const Duration(milliseconds: 300),
-                                curve: Curves.easeInOut,
-                              )
+                                      v * (38.sp + (12.w / images.length)),
+                                      duration:
+                                          const Duration(milliseconds: 300),
+                                      curve: Curves.easeInOut,
+                                    )
                                   : scrollController.animateTo(
-                                scrollController.position.maxScrollExtent,
-                                duration:
-                                const Duration(milliseconds: 300),
-                                curve: Curves.easeInOut,
-                              );
+                                      scrollController.position.maxScrollExtent,
+                                      duration:
+                                          const Duration(milliseconds: 300),
+                                      curve: Curves.easeInOut,
+                                    );
                             } else if (currentIndex > v) {
                               v * (38.sp + (12.w / images.length)) >
-                                  scrollController.position.minScrollExtent
+                                      scrollController.position.minScrollExtent
                                   ? scrollController.animateTo(
-                                v * (38.sp + (12.w / images.length)),
-                                duration:
-                                const Duration(milliseconds: 300),
-                                curve: Curves.easeInOut,
-                              )
+                                      v * (38.sp + (12.w / images.length)),
+                                      duration:
+                                          const Duration(milliseconds: 300),
+                                      curve: Curves.easeInOut,
+                                    )
                                   : scrollController.animateTo(
-                                scrollController.position.minScrollExtent,
-                                duration:
-                                const Duration(milliseconds: 300),
-                                curve: Curves.easeInOut,
-                              );
+                                      scrollController.position.minScrollExtent,
+                                      duration:
+                                          const Duration(milliseconds: 300),
+                                      curve: Curves.easeInOut,
+                                    );
                             }
                             if (v == currentIndex) {
                               scrollController.animateTo(
@@ -184,12 +183,12 @@ onOpenPhoto(
                               value: event == null
                                   ? 0
                                   : event.cumulativeBytesLoaded /
-                                  event.expectedTotalBytes!.toInt(),
+                                      event.expectedTotalBytes!.toInt(),
                             ),
                           ),
                         ),
                         backgroundDecoration:
-                        const BoxDecoration(color: Colors.transparent),
+                            const BoxDecoration(color: Colors.transparent),
                       ),
                     ),
                   ),
@@ -203,48 +202,47 @@ onOpenPhoto(
                     },
                     child: isOpen
                         ? Opacity(
-                      opacity: barrierColor,
-                      child: Material(
-                        color: Colors.transparent,
-                        child: Container(
-                          color: (secondaryColor ?? Colors.black)
-                              .withOpacity(barrierColor == 1
-                              ? 0.5
-                              : barrierColor / 2),
-                          padding: EdgeInsets.only(
-                              top: MediaQuery.of(context).padding.top +
-                                  (Platform.isAndroid ? 10.h : 0),
-                              left: leftPadding ?? 21.w,
-                              right: 21.w,
-                              bottom: 5.h),
-                          child: closeButton ??
-                              Row(
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      onClose?.call();
-                                      Navigator.pop(context);
-                                    },
-                                    child: Row(
+                            opacity: barrierColor,
+                            child: Material(
+                              color: Colors.transparent,
+                              child: Container(
+                                color: (secondaryColor ?? Colors.black)
+                                    .withOpacity(barrierColor == 1
+                                        ? 0.5
+                                        : barrierColor / 2),
+                                padding: EdgeInsets.only(
+                                    top: MediaQuery.of(context).padding.top +
+                                        (Platform.isAndroid ? 10.h : 0),
+                                    left: leftPadding ?? 21.w,
+                                    right: 21.w,
+                                    bottom: 5.h),
+                                child: closeButton ??
+                                    Row(
                                       children: [
-                                        const Icon(CupertinoIcons.back,
-                                            color: CupertinoColors.white),
-                                        Text(
-                                          closeText ?? "Back",
-                                          style: TextStyle(
-                                              color:
-                                              CupertinoColors.white,
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 14.sp),
-                                        )
+                                        GestureDetector(
+                                          onTap: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: Row(
+                                            children: [
+                                              const Icon(CupertinoIcons.back,
+                                                  color: CupertinoColors.white),
+                                              Text(
+                                                closeText ?? "Back",
+                                                style: TextStyle(
+                                                    color:
+                                                        CupertinoColors.white,
+                                                    fontWeight: FontWeight.w500,
+                                                    fontSize: 14.sp),
+                                              )
+                                            ],
+                                          ),
+                                        ),
                                       ],
                                     ),
-                                  ),
-                                ],
                               ),
-                        ),
-                      ),
-                    )
+                            ),
+                          )
                         : const SizedBox(),
                   ),
                   AnimatedSwitcher(
@@ -257,28 +255,28 @@ onOpenPhoto(
                     },
                     child: isOpen
                         ? Opacity(
-                      opacity: barrierColor,
-                      child: Material(
-                        color: Colors.transparent,
-                        child: Container(
-                          padding: EdgeInsets.only(
-                              top: MediaQuery.of(context).padding.top +
-                                  (Platform.isAndroid ? 10.h : 0),
-                              left: 21.w,
-                              right: 21.w,
-                              bottom: 5.h),
-                          child: Text(
-                            "$currentPage/${images.length}",
-                            style: topTextStyle ??
-                                TextStyle(
-                                  color: CupertinoColors.white,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 16.sp,
+                            opacity: barrierColor,
+                            child: Material(
+                              color: Colors.transparent,
+                              child: Container(
+                                padding: EdgeInsets.only(
+                                    top: MediaQuery.of(context).padding.top +
+                                        (Platform.isAndroid ? 10.h : 0),
+                                    left: 21.w,
+                                    right: 21.w,
+                                    bottom: 5.h),
+                                child: Text(
+                                  "$currentPage/${images.length}",
+                                  style: topTextStyle ??
+                                      TextStyle(
+                                        color: CupertinoColors.white,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 16.sp,
+                                      ),
                                 ),
-                          ),
-                        ),
-                      ),
-                    )
+                              ),
+                            ),
+                          )
                         : const SizedBox(),
                   ),
                   Positioned(
@@ -293,93 +291,86 @@ onOpenPhoto(
                       duration: const Duration(milliseconds: 200),
                       child: isOpen
                           ? Opacity(
-                        opacity: barrierColor,
-                        child: Material(
-                          color: Colors.transparent,
-                          child: Container(
-                            width: width,
-                            color: (secondaryColor ?? Colors.black)
-                                .withOpacity(barrierColor == 1
-                                ? 0.5
-                                : barrierColor / 2),
-                            padding: EdgeInsets.only(
-                                bottom: MediaQuery.of(context)
-                                    .padding
-                                    .bottom +
-                                    (Platform.isAndroid ? 10.h : 0),
-                                left: 0.w,
-                                right: 0.w,
-                                top: 8.h),
-                            child: SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              controller: scrollController,
-                              physics:
-                              const NeverScrollableScrollPhysics(),
-                              child: Row(
-                                mainAxisAlignment:
-                                MainAxisAlignment.center,
-                                children: [
-                                  SizedBox(
-                                    width:
-                                    MediaQuery.sizeOf(context).width /
-                                        2 -
-                                        23.5.w,
-                                  ),
-                                  ...List.generate(images.length,
-                                          (index) {
-                                        return Padding(
-                                          padding: EdgeInsets.symmetric(
-                                            horizontal: 2.w,
-                                          ),
-                                          child: GestureDetector(
-                                            onTap: () async {
-                                              await Future.delayed(
-                                                const Duration(
-                                                  milliseconds: 20,
-                                                ),
-                                              );
-                                              pageCtrl.jumpToPage(
-                                                index,
-                                              );
-                                            },
-                                            child: ClipRRect(
-                                              borderRadius:
-                                              BorderRadius.circular(4.r),
-                                              child: AnimatedContainer(
-                                                duration: const Duration(
-                                                    milliseconds: 200),
-                                                width: 35.sp +
-                                                    (index == currentPage - 1
-                                                        ? 12.w
-                                                        : 0),
-                                                child: isNetwork
-                                                    ? CachedNetworkImage(
-                                                  imageUrl:
-                                                  images[index],
-                                                  height: 45.sp,
-                                                  fit: BoxFit.cover,
-                                                )
-                                                    : Image.asset(
-                                                  images[index],
-                                                  height: 45.sp,
-                                                  fit: BoxFit.cover,
+                              opacity: barrierColor,
+                              child: Material(
+                                color: Colors.transparent,
+                                child: Container(
+                                  width: fullWidth,
+                                  color: (secondaryColor ?? Colors.black)
+                                      .withOpacity(barrierColor == 1
+                                          ? 0.5
+                                          : barrierColor / 2),
+                                  padding: EdgeInsets.only(
+                                      bottom: MediaQuery.of(context)
+                                              .padding
+                                              .bottom +
+                                          (Platform.isAndroid ? 10.h : 0),
+                                      left: 0.w,
+                                      right: 0.w,
+                                      top: 8.h),
+                                  child: SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    controller: scrollController,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        SizedBox(
+                                          width: fullWidth / 2 - 23.5.w,
+                                        ),
+                                        ...List.generate(images.length,
+                                            (index) {
+                                          return Padding(
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: 2.w,
+                                            ),
+                                            child: GestureDetector(
+                                              onTap: () async {
+                                                await Future.delayed(
+                                                  const Duration(
+                                                    milliseconds: 20,
+                                                  ),
+                                                );
+                                                pageCtrl.jumpToPage(
+                                                  index,
+                                                );
+                                              },
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(4.r),
+                                                child: AnimatedContainer(
+                                                  duration: const Duration(
+                                                      milliseconds: 200),
+                                                  width: 35.sp +
+                                                      (index == currentPage - 1
+                                                          ? 12.w
+                                                          : 0),
+                                                  child: isNetwork
+                                                      ? CachedNetworkImage(
+                                                          imageUrl:
+                                                              images[index],
+                                                          height: 45.sp,
+                                                          fit: BoxFit.cover,
+                                                        )
+                                                      : Image.asset(
+                                                          images[index],
+                                                          height: 45.sp,
+                                                          fit: BoxFit.cover,
+                                                        ),
                                                 ),
                                               ),
                                             ),
-                                          ),
-                                        );
-                                      }),
-                                  SizedBox(
-                                      width: MediaQuery.sizeOf(context)
-                                          .width /
-                                          2 -
-                                          23.5.w)
-                                ],
+                                          );
+                                        }),
+                                        SizedBox(width: fullWidth / 2 - 23.5.w)
+                                      ],
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                        ),
-                      )
+                            )
                           : const SizedBox(),
                     ),
                   ),

@@ -1,0 +1,34 @@
+import 'package:flutter/material.dart';
+import 'package:photo_opener/photo_opener.dart';
+
+void main() {
+  runApp(const App());
+}
+
+class App extends StatelessWidget {
+  const App({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        body: Center(
+          child: GestureDetector(
+            onTap: () {
+              onOpenPhoto(
+                context: context,
+                images: [
+                  "asset/image1.png",
+                  "asset/image2.png",
+                  "asset/image3.png",
+                ],
+                isNetwork: false,
+              );
+            },
+            child: const Text("OpenImage"),
+          ),
+        ),
+      ),
+    );
+  }
+}
