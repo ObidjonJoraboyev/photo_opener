@@ -1,6 +1,7 @@
+
 import 'package:flutter/material.dart';
 import 'package:photo_opener/photo_opener.dart';
-
+export "../lib/photo_opener.dart";
 void main() {
   runApp(const App());
 }
@@ -15,6 +16,7 @@ class App extends StatelessWidget {
         body: Center(
           child: GestureDetector(
             onTap: () {
+              print('Photo opened successfully!');
               onOpenPhoto(
                 context: context,
                 images: [
@@ -23,7 +25,9 @@ class App extends StatelessWidget {
                   "asset/image3.png",
                 ],
                 isNetwork: false,
+
               );
+
             },
             child: const Text("OpenImage"),
           ),
