@@ -24,7 +24,8 @@ onOpenPhoto(
     TextStyle? topTextStyle,
     double? leftPadding,
     bool isNetwork = true,
-    int initialIndex = 0}) {
+    int initialIndex = 0,
+    VoidCallback? onClose}) {
   double barrierColor = 1;
   bool isOpen = true;
   double fullHeight = MediaQuery.sizeOf(context).height;
@@ -96,6 +97,7 @@ onOpenPhoto(
                       scrollController.dispose();
                       pageCtrl.dispose();
                       if (!context.mounted) return;
+                      onClose?.call();
                       Navigator.pop(context);
                     },
                     direction: state == PhotoViewScaleState.initial ||
@@ -208,9 +210,11 @@ onOpenPhoto(
                               color: Colors.transparent,
                               child: Container(
                                 color: (secondaryColor ?? Colors.black)
-                                    .withOpacity(barrierColor == 1
-                                        ? 0.5
-                                        : barrierColor / 2),
+                                    .withAlpha(((barrierColor == 1
+                                                ? 0.5
+                                                : barrierColor / 2) *
+                                            255)
+                                        .toInt()),
                                 padding: EdgeInsets.only(
                                     top: MediaQuery.of(context).padding.top +
                                         (Platform.isAndroid ? 10.h : 0),
@@ -222,6 +226,8 @@ onOpenPhoto(
                                       children: [
                                         GestureDetector(
                                           onTap: () {
+                                            onClose?.call();
+
                                             Navigator.pop(context);
                                           },
                                           child: Row(
@@ -298,9 +304,11 @@ onOpenPhoto(
                                 child: Container(
                                   width: fullWidth,
                                   color: (secondaryColor ?? Colors.black)
-                                      .withOpacity(barrierColor == 1
-                                          ? 0.5
-                                          : barrierColor / 2),
+                                      .withAlpha(((barrierColor == 1
+                                                  ? 0.5
+                                                  : barrierColor / 2) *
+                                              255)
+                                          .toInt()),
                                   padding: EdgeInsets.only(
                                       bottom: MediaQuery.of(context)
                                               .padding
