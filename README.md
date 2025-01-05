@@ -19,12 +19,13 @@ If you are looking for a package to open and zoom in or out images, this package
 This package allows you to open your images on a large screen and zoom in or out.
 
 
-## Usage
+## Review
 
 ![Demo](https://raw.githubusercontent.com/ObidjonJoraboyev/photo_opener/main/gif/example.gif)
 
 
 
+## Usage
 
 ```dart
 import 'package:flutter/cupertino.dart';

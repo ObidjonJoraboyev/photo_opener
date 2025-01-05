@@ -9,23 +9,24 @@ import 'package:photo_view/photo_view_gallery.dart';
 
 import 'extensions/screen_util.dart';
 
-onOpenPhoto(
-    {required BuildContext context,
-    required List<String> images,
-    Widget? closeButton,
-    String? closeText,
-    Color? backgroundColor,
-    Color? secondaryColor,
-    Color? loaderColor,
-    double? maxScale,
-    double? minScale,
-    PageController? pageController,
-    ValueChanged<int>? onPageChange,
-    TextStyle? topTextStyle,
-    double? leftPadding,
-    bool isNetwork = true,
-    int initialIndex = 0,
-    VoidCallback? onClose}) {
+onOpenPhoto({
+  required BuildContext context,
+  required List<String> images,
+  Widget? closeButton,
+  String? closeText,
+  Color? backgroundColor,
+  Color? secondaryColor,
+  Color? loaderColor,
+  double? maxScale,
+  double? minScale,
+  PageController? pageController,
+  ValueChanged<int>? onPageChange,
+  TextStyle? topTextStyle,
+  double? leftPadding,
+  bool isNetwork = true,
+  int initialIndex = 0,
+  VoidCallback? onClose,
+}) {
   double barrierColor = 1;
   bool isOpen = true;
   double fullHeight = MediaQuery.sizeOf(context).height;
@@ -69,7 +70,7 @@ onOpenPhoto(
                 setState(() {});
                 !isOpen
                     ? SystemChrome.setEnabledSystemUIMode(
-                        SystemUiMode.immersive)
+                        SystemUiMode.immersiveSticky)
                     : SystemChrome.setEnabledSystemUIMode(
                         SystemUiMode.edgeToEdge);
 
@@ -83,17 +84,25 @@ onOpenPhoto(
                 alignment: Alignment.topCenter,
                 children: [
                   Dismissible(
-                    onUpdate: (v) {
+                    onUpdate: (v) async {
                       barrierColor =
                           (1 - v.progress * 4) >= 0 ? (1 - v.progress * 4) : 0;
+                      if (barrierColor > 0.5) {
+                        await SystemChrome.setEnabledSystemUIMode(
+                            SystemUiMode.edgeToEdge);
+                        setState(() {});
+                      }
+                      if (barrierColor == 1 && !isOpen) {
+                        await SystemChrome.setEnabledSystemUIMode(
+                            SystemUiMode.immersive);
+                        setState(() {});
+                      }
                       setState(() {});
                     },
                     movementDuration: const Duration(milliseconds: 500),
                     resizeDuration: const Duration(milliseconds: 1),
                     onDismissed: (v) async {
                       barrierColor = 1;
-                      await SystemChrome.setEnabledSystemUIMode(
-                          SystemUiMode.edgeToEdge);
                       scrollController.dispose();
                       pageCtrl.dispose();
                       if (!context.mounted) return;
