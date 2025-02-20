@@ -177,7 +177,7 @@ onOpenPhoto({
                             scaleStateController: photoController,
                             imageProvider: !isNetwork
                                 ? AssetImage(images[index])
-                                : NetworkImage(images[index]),
+                                : CachedNetworkImageProvider(images[index]),
                             maxScale: PhotoViewComputedScale.contained *
                                 (maxScale ?? 5),
                             initialScale: PhotoViewComputedScale.contained * 1,
