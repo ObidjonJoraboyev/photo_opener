@@ -103,16 +103,6 @@ class _PhotoOpenerExampleState extends State<PhotoOpenerExample> {
   }
 }
 ```
-## ⚙️ Parameters
-Parameter	Type	Description
-context	BuildContext	Required, widget context
-images	List<String>	List of image paths or URLs
-isNetwork	bool	true for network images
-initialIndex	int	Starting image index
-minScale	double	Minimum zoom scale
-maxScale	double	Maximum zoom scale
-backgroundColor	Color	Background color of viewer
-loaderColor	Color	Loader color while image loads
 
 
 ## 📜 License
