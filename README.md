@@ -104,7 +104,6 @@ class _PhotoOpenerExampleState extends State<PhotoOpenerExample> {
 }
 ```
 
-
 ## 📜 License
 This package is licensed under the MIT License.
 Feel free to use it in your projects.
