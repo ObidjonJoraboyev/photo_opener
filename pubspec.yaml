@@ -1,22 +1,30 @@
 name: photo_opener
-description: "This package can open your photos just like in Telegram. From assets or network."
-version: 0.2.0
+description: >
+  A Flutter package to preview and zoom images just like Telegram's media viewer.
+  Supports assets and network images with pinch-to-zoom, swipe navigation, and smooth animations.
+version: 0.2.1
 homepage: https://github.com/ObidjonJoraboyev/photo_opener
+repository: https://github.com/ObidjonJoraboyev/photo_opener
+issue_tracker: https://github.com/ObidjonJoraboyev/photo_opener/issues
+documentation: https://github.com/ObidjonJoraboyev/photo_opener#readme
+topics:
+  - image
+  - gallery
+  - viewer
+  - zoom
+  - photos
 
 environment:
   sdk: ^3.5.4
   flutter: ">=1.20.0"
-example:
-  directory: example
-dependencies:
-  cached_network_image: ^3.4.1
-  photo_view: ^0.15.0
-  flutter_lints: ^5.0.0
 
+dependencies:
   flutter:
     sdk: flutter
-
+  cached_network_image: ^3.4.1
+  photo_view: ^0.15.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_lints: ^5.0.0

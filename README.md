@@ -12,20 +12,29 @@ and the Flutter guide for
 -->
 
 
-If you are looking for a package to open and zoom in or out images, this package is for you
+## 📸 Photo Opener
+A Flutter package to open and zoom images with smooth gestures and customizable UI.
+Perfect for displaying images in full-screen mode with pinch-to-zoom functionality.
 
-## Features
+## ✨ Features
+🖼 Open images in a full-screen viewer
 
-This package allows you to open your images on a large screen and zoom in or out.
+🔍 Zoom in/out with smooth pinch gestures
+
+🌈 Customizable colors, paddings, and styles
+
+📜 Support for multiple images with swipe
+
+🌐 Works with local assets or network images
 
 
-## Review
+## 📷 Preview
 
 ![Demo](https://raw.githubusercontent.com/ObidjonJoraboyev/photo_opener/main/gif/example.gif)
 
 
 
-## Usage
+## 📖 Usage
 
 ```dart
 import 'package:flutter/cupertino.dart';
@@ -64,7 +73,7 @@ class _PhotoOpenerExampleState extends State<PhotoOpenerExample> {
                 loaderColor: Colors.red,
                 leftPadding: 20,
                 isNetwork: false,
-                initialIndex: 2
+                initialIndex: 2,
                 topTextStyle: const TextStyle(
                   color: CupertinoColors.white,
                   fontWeight: FontWeight.w600,
@@ -93,6 +102,21 @@ class _PhotoOpenerExampleState extends State<PhotoOpenerExample> {
     );
   }
 }
-
-
 ```
+## ⚙️ Parameters
+Parameter	Type	Description
+context	BuildContext	Required, widget context
+images	List<String>	List of image paths or URLs
+isNetwork	bool	true for network images
+initialIndex	int	Starting image index
+minScale	double	Minimum zoom scale
+maxScale	double	Maximum zoom scale
+backgroundColor	Color	Background color of viewer
+loaderColor	Color	Loader color while image loads
+
+
+## 📜 License
+This package is licensed under the MIT License.
+Feel free to use it in your projects.
+
+
