@@ -178,7 +178,7 @@ onOpenPhoto({
                             scaleStateController: photoController,
                             imageProvider: !isNetwork
                                 ? AssetImage(images[index])
-                                : NetworkImage(
+                                : CachedNetworkImageProvider(
                                     images[index],
                               headers: httpHeaders
                                   ),
