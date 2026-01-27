@@ -103,6 +103,59 @@ class _PhotoOpenerExampleState extends State<PhotoOpenerExample> {
   }
 }
 ```
+If you need to use JWT Token for authorization to load image, you can use httpHeaders parameter with bearer token. It is a map of headers. For example:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:photo_opener/photo_opener.dart';
+
+void main() {
+  runApp(MaterialApp(home: App()));
+}
+
+class App extends StatelessWidget {
+  const App({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        body: Center(
+          child: GestureDetector(
+            onTap: () {
+              print('Photo opened successfully!');
+              onOpenPhoto(
+                context: context,
+                images: [
+                  'https://picsum.photos/id/1/1024/768',
+                  'https://picsum.photos/id/2/1024/768',
+                  'https://picsum.photos/id/3/1024/768',
+                  'https://picsum.photos/id/4/1024/768',
+                ],
+                httpHeaders: {
+                  'Authorization':
+                  'Bearer your_token_here'
+                },
+                isNetwork: true,
+              );
+            },
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: Image.network(
+                'https://picsum.photos/id/1/1024/768',
+                width: 300,
+                height: 300,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+```
 
 ## 📜 License
 This package is licensed under the MIT License.

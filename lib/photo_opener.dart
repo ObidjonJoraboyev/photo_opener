@@ -24,6 +24,7 @@ onOpenPhoto({
   TextStyle? topTextStyle,
   double? leftPadding,
   bool isNetwork = true,
+  Map<String, String>? httpHeaders,
   int initialIndex = 0,
   VoidCallback? onClose,
 }) {
@@ -179,6 +180,7 @@ onOpenPhoto({
                                 ? AssetImage(images[index])
                                 : NetworkImage(
                                     images[index],
+                              headers: httpHeaders
                                   ),
                             maxScale: PhotoViewComputedScale.contained *
                                 (maxScale ?? 5),

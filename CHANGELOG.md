@@ -1,3 +1,14 @@
+## 0.2.4 - 2026-01-27
+### Added
+- Support for an optional **httpHeaders** parameter to pass headers for network images downloading.
+
+### Improved
+- Showing hints in the documentation on how to use **Bearer Token** for authorization.
+- Use Picsum images in the example for network images.
+
+### Fixed
+- Fix the issue with **No MaterialLocalizations found.** with example/example.dart
+
 ## 0.2.3 - 2025-08-12
 ### Added
 - Support for opening images from both **assets** and **network URLs**.
