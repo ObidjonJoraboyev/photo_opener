@@ -373,6 +373,7 @@ onOpenPhoto({
                                                       ? CachedNetworkImage(
                                                           imageUrl:
                                                               images[index],
+                                                          httpHeaders: httpHeaders,
                                                           height: 45.sp,
                                                           fit: BoxFit.cover,
                                                         )
