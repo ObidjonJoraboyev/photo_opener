@@ -4,6 +4,7 @@
 
 ### Improved
 - Showing hints in the documentation on how to use **Bearer Token** for authorization.
+- Replace NetworkImageProvider with CachedNetworkImageProvider to improve network images loading.
 - Use Picsum images in the example for network images.
 
 ### Fixed
