@@ -13,6 +13,7 @@ onOpenPhoto({
   required BuildContext context,
   required List<String> images,
   Widget? closeButton,
+  Widget Function(BuildContext, String, Object)? errorWidget,
   String? closeText,
   Color? backgroundColor,
   Color? secondaryColor,
@@ -376,7 +377,8 @@ onOpenPhoto({
                                                           httpHeaders: httpHeaders,
                                                           height: 45.sp,
                                                           fit: BoxFit.cover,
-                                                        )
+                                                          errorWidget: errorWidget
+                                                       )
                                                       : Image.asset(
                                                           images[index],
                                                           height: 45.sp,

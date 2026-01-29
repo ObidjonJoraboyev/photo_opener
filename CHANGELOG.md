@@ -1,6 +1,7 @@
 ## 0.2.4 - 2026-01-27
 ### Added
 - Support for an optional **httpHeaders** parameter to pass headers for network images downloading.
+- Support for an option onErrorWidget to show a custom widget when image loading fails.
 
 ### Improved
 - Showing hints in the documentation on how to use **Bearer Token** for authorization.
