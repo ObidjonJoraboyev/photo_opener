@@ -179,10 +179,8 @@ onOpenPhoto({
                             scaleStateController: photoController,
                             imageProvider: !isNetwork
                                 ? AssetImage(images[index])
-                                : CachedNetworkImageProvider(
-                                    images[index],
-                              headers: httpHeaders
-                                  ),
+                                : CachedNetworkImageProvider(images[index],
+                                    headers: httpHeaders),
                             maxScale: PhotoViewComputedScale.contained *
                                 (maxScale ?? 5),
                             initialScale: PhotoViewComputedScale.contained * 1,
@@ -374,11 +372,12 @@ onOpenPhoto({
                                                       ? CachedNetworkImage(
                                                           imageUrl:
                                                               images[index],
-                                                          httpHeaders: httpHeaders,
+                                                          httpHeaders:
+                                                              httpHeaders,
                                                           height: 45.sp,
                                                           fit: BoxFit.cover,
-                                                          errorWidget: errorWidget
-                                                       )
+                                                          errorWidget:
+                                                              errorWidget)
                                                       : Image.asset(
                                                           images[index],
                                                           height: 45.sp,
