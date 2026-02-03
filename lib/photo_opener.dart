@@ -9,7 +9,7 @@ import 'package:photo_view/photo_view_gallery.dart';
 
 import 'extensions/screen_util.dart';
 
-onOpenPhoto({
+void onOpenPhoto({
   required BuildContext context,
   required List<String> images,
   Widget? closeButton,
