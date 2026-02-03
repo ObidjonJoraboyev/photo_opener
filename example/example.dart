@@ -4,7 +4,9 @@ import 'package:photo_opener/photo_opener.dart';
 export "../lib/photo_opener.dart";
 
 void main() {
-  runApp(const App());
+  runApp(MaterialApp(
+    home: App(),
+  ));
 }
 
 class App extends StatelessWidget {

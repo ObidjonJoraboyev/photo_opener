@@ -103,6 +103,68 @@ class _PhotoOpenerExampleState extends State<PhotoOpenerExample> {
   }
 }
 ```
+If you need to use JWT Token for authorization to load image, you can use httpHeaders parameter with bearer token. It is a map of headers.
+
+Moreover, if you need to show a custom error widget at the bottom if image loading fails, you can use errorWidget parameter. 
+It is a widget that will be shown at the bottom of the screen.
+
+See both example below:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:photo_opener/photo_opener.dart';
+
+void main() {
+  runApp(MaterialApp(home: App()));
+}
+
+class App extends StatelessWidget {
+  const App({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        body: Center(
+          child: GestureDetector(
+            onTap: () {
+              print('Photo opened successfully!');
+              onOpenPhoto(
+                context: context,
+                initialIndex: 1,
+                images: [
+                  'https://notworkurl-image.com',
+                  'https://picsum.photos/id/1/1024/768',
+                  'https://picsum.photos/id/2/1024/768',
+                  'https://picsum.photos/id/3/1024/768',
+                  'https://picsum.photos/id/4/1024/768',
+                  'https://notworkurl-image.com',
+                ],
+                httpHeaders: {
+                  'Authorization':
+                  'Bearer your_token_here'
+                },
+                isNetwork: true,
+                errorWidget: (context, url, error) =>  Icon(Icons.broken_image, size: 32,color: Colors.white70,),
+              ); //End of onOpenPhoto
+            },
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: Image.network(
+                'https://picsum.photos/id/1/1024/768',
+                width: 300,
+                height: 300,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+```
 
 ## 📜 License
 This package is licensed under the MIT License.

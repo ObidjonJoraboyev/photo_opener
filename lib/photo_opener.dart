@@ -13,6 +13,7 @@ onOpenPhoto({
   required BuildContext context,
   required List<String> images,
   Widget? closeButton,
+  Widget Function(BuildContext, String, Object)? errorWidget,
   String? closeText,
   Color? backgroundColor,
   Color? secondaryColor,
@@ -24,6 +25,7 @@ onOpenPhoto({
   TextStyle? topTextStyle,
   double? leftPadding,
   bool isNetwork = true,
+  Map<String, String>? httpHeaders,
   int initialIndex = 0,
   VoidCallback? onClose,
 }) {
@@ -177,8 +179,9 @@ onOpenPhoto({
                             scaleStateController: photoController,
                             imageProvider: !isNetwork
                                 ? AssetImage(images[index])
-                                : NetworkImage(
+                                : CachedNetworkImageProvider(
                                     images[index],
+                              headers: httpHeaders
                                   ),
                             maxScale: PhotoViewComputedScale.contained *
                                 (maxScale ?? 5),
@@ -371,9 +374,11 @@ onOpenPhoto({
                                                       ? CachedNetworkImage(
                                                           imageUrl:
                                                               images[index],
+                                                          httpHeaders: httpHeaders,
                                                           height: 45.sp,
                                                           fit: BoxFit.cover,
-                                                        )
+                                                          errorWidget: errorWidget
+                                                       )
                                                       : Image.asset(
                                                           images[index],
                                                           height: 45.sp,
