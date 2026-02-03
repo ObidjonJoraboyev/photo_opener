@@ -1,4 +1,4 @@
-## 0.2.4 - 2026-01-27
+## 0.2.4 - 2026-02-03
 ### Added
 - Support for an optional **httpHeaders** parameter to pass headers for network images downloading.
 - Support for an optional onErrorWidget parameter to show a custom widget when image loading fails.

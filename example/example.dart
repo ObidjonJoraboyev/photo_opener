@@ -19,7 +19,6 @@ class App extends StatelessWidget {
         body: Center(
           child: GestureDetector(
             onTap: () {
-              print('Photo opened successfully!');
               onOpenPhoto(
                 context: context,
                 images: [
