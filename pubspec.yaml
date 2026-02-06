@@ -2,7 +2,7 @@ name: photo_opener
 description: >
   A Flutter package to preview and zoom images just like Telegram's media viewer.
   Supports assets and network images with pinch-to-zoom, swipe navigation, and smooth animations.
-version: 0.2.6
+version: 0.2.7
 homepage: https://github.com/ObidjonJoraboyev/photo_opener
 repository: https://github.com/ObidjonJoraboyev/photo_opener
 issue_tracker: https://github.com/ObidjonJoraboyev/photo_opener/issues
