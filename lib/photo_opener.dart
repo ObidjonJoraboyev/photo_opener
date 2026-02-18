@@ -9,9 +9,12 @@ import 'package:photo_view/photo_view_gallery.dart';
 
 import 'extensions/screen_util.dart';
 
+enum PhotoType { network, asset, file }
+
 void onOpenPhoto({
   required BuildContext context,
   required List<String> images,
+  required PhotoType type,
   Widget? closeButton,
   Widget Function(BuildContext, String, Object)? errorWidget,
   String? closeText,
@@ -24,7 +27,6 @@ void onOpenPhoto({
   ValueChanged<int>? onPageChange,
   TextStyle? topTextStyle,
   double? leftPadding,
-  bool isNetwork = true,
   Map<String, String>? httpHeaders,
   int initialIndex = 0,
   VoidCallback? onClose,
@@ -125,8 +127,7 @@ void onOpenPhoto({
                         onClose?.call();
                         Navigator.pop(context);
                       },
-                      direction:
-                          state == PhotoViewScaleState.initial ||
+                      direction: state == PhotoViewScaleState.initial ||
                               state == PhotoViewScaleState.originalSize ||
                               state == PhotoViewScaleState.covering
                           ? DismissDirection.vertical
@@ -141,8 +142,7 @@ void onOpenPhoto({
                               if (currentIndex < v) {
                                 v * (38.sp + (12.w / images.length)) <
                                         scrollController
-                                            .position
-                                            .maxScrollExtent
+                                            .position.maxScrollExtent
                                     ? scrollController.animateTo(
                                         v * (38.sp + (12.w / images.length)),
                                         duration: const Duration(
@@ -152,8 +152,7 @@ void onOpenPhoto({
                                       )
                                     : scrollController.animateTo(
                                         scrollController
-                                            .position
-                                            .maxScrollExtent,
+                                            .position.maxScrollExtent,
                                         duration: const Duration(
                                           milliseconds: 300,
                                         ),
@@ -162,8 +161,7 @@ void onOpenPhoto({
                               } else if (currentIndex > v) {
                                 v * (38.sp + (12.w / images.length)) >
                                         scrollController
-                                            .position
-                                            .minScrollExtent
+                                            .position.minScrollExtent
                                     ? scrollController.animateTo(
                                         v * (38.sp + (12.w / images.length)),
                                         duration: const Duration(
@@ -173,8 +171,7 @@ void onOpenPhoto({
                                       )
                                     : scrollController.animateTo(
                                         scrollController
-                                            .position
-                                            .minScrollExtent,
+                                            .position.minScrollExtent,
                                         duration: const Duration(
                                           milliseconds: 300,
                                         ),
@@ -203,19 +200,19 @@ void onOpenPhoto({
                           builder: (BuildContext context, int index) {
                             return PhotoViewGalleryPageOptions(
                               scaleStateController: photoController,
-                              imageProvider: !isNetwork
+                              imageProvider: type.name == PhotoType.asset.name
                                   ? AssetImage(images[index])
-                                  : CachedNetworkImageProvider(
-                                      images[index],
-                                      headers: httpHeaders,
-                                    ),
-                              maxScale:
-                                  PhotoViewComputedScale.contained *
+                                  : type.name == PhotoType.network.name
+                                      ? CachedNetworkImageProvider(
+                                          images[index],
+                                          headers: httpHeaders,
+                                        )
+                                      : FileImage(File(images[index])),
+                              maxScale: PhotoViewComputedScale.contained *
                                   (maxScale ?? 5),
                               initialScale:
                                   PhotoViewComputedScale.contained * 1,
-                              minScale:
-                                  PhotoViewComputedScale.contained *
+                              minScale: PhotoViewComputedScale.contained *
                                   (minScale ?? 1),
                             );
                           },
@@ -229,7 +226,7 @@ void onOpenPhoto({
                                 value: event == null
                                     ? 0
                                     : event.cumulativeBytesLoaded /
-                                          event.expectedTotalBytes!.toInt(),
+                                        event.expectedTotalBytes!.toInt(),
                               ),
                             ),
                           ),
@@ -252,22 +249,20 @@ void onOpenPhoto({
                                 child: Container(
                                   color: (secondaryColor ?? Colors.black)
                                       .withAlpha(
-                                        ((barrierColor > 0.99
-                                                    ? 0.5
-                                                    : barrierColor / 2) *
-                                                255)
-                                            .toInt(),
-                                      ),
+                                    ((barrierColor > 0.99
+                                                ? 0.5
+                                                : barrierColor / 2) *
+                                            255)
+                                        .toInt(),
+                                  ),
                                   padding: EdgeInsets.only(
-                                    top:
-                                        MediaQuery.of(context).padding.top +
+                                    top: MediaQuery.of(context).padding.top +
                                         (Platform.isAndroid ? 10.h : 0),
                                     left: leftPadding ?? 21.w,
                                     right: 21.w,
                                     bottom: 5.h,
                                   ),
-                                  child:
-                                      closeButton ??
+                                  child: closeButton ??
                                       Row(
                                         children: [
                                           GestureDetector(
@@ -313,8 +308,7 @@ void onOpenPhoto({
                                 color: Colors.transparent,
                                 child: Container(
                                   padding: EdgeInsets.only(
-                                    top:
-                                        MediaQuery.of(context).padding.top +
+                                    top: MediaQuery.of(context).padding.top +
                                         (Platform.isAndroid ? 10.h : 0),
                                     left: 21.w,
                                     right: 21.w,
@@ -322,8 +316,7 @@ void onOpenPhoto({
                                   ),
                                   child: Text(
                                     "$currentPage/${images.length}",
-                                    style:
-                                        topTextStyle ??
+                                    style: topTextStyle ??
                                         TextStyle(
                                           color: CupertinoColors.white,
                                           fontWeight: FontWeight.w600,
@@ -354,15 +347,14 @@ void onOpenPhoto({
                                     width: fullWidth,
                                     color: (secondaryColor ?? Colors.black)
                                         .withAlpha(
-                                          ((barrierColor > 0.99
-                                                      ? 0.5
-                                                      : barrierColor / 2) *
-                                                  255)
-                                              .toInt(),
-                                        ),
+                                      ((barrierColor > 0.99
+                                                  ? 0.5
+                                                  : barrierColor / 2) *
+                                              255)
+                                          .toInt(),
+                                    ),
                                     padding: EdgeInsets.only(
-                                      bottom:
-                                          MediaQuery.of(
+                                      bottom: MediaQuery.of(
                                             context,
                                           ).padding.bottom +
                                           (Platform.isAndroid ? 10.h : 0),
@@ -386,53 +378,66 @@ void onOpenPhoto({
                                             index,
                                           ) {
                                             return Padding(
-                                              padding: EdgeInsets.symmetric(
-                                                horizontal: 2.w,
-                                              ),
-                                              child: GestureDetector(
-                                                onTap: () async {
-                                                  await Future.delayed(
-                                                    const Duration(
-                                                      milliseconds: 20,
-                                                    ),
-                                                  );
-                                                  pageCtrl.jumpToPage(index);
-                                                },
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                        4.r,
-                                                      ),
-                                                  child: AnimatedContainer(
-                                                    duration: const Duration(
-                                                      milliseconds: 200,
-                                                    ),
-                                                    width:
-                                                        35.sp +
-                                                        (index ==
-                                                                currentPage - 1
-                                                            ? 12.w
-                                                            : 0),
-                                                    child: isNetwork
-                                                        ? CachedNetworkImage(
-                                                            imageUrl:
-                                                                images[index],
-                                                            httpHeaders:
-                                                                httpHeaders,
-                                                            height: 45.sp,
-                                                            fit: BoxFit.cover,
-                                                            errorWidget:
-                                                                errorWidget,
-                                                          )
-                                                        : Image.asset(
-                                                            images[index],
-                                                            height: 45.sp,
-                                                            fit: BoxFit.cover,
-                                                          ),
-                                                  ),
+                                                padding: EdgeInsets.symmetric(
+                                                  horizontal: 2.w,
                                                 ),
-                                              ),
-                                            );
+                                                child: GestureDetector(
+                                                  onTap: () async {
+                                                    await Future.delayed(
+                                                      const Duration(
+                                                        milliseconds: 20,
+                                                      ),
+                                                    );
+                                                    pageCtrl.jumpToPage(index);
+                                                  },
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                      4.r,
+                                                    ),
+                                                    child: AnimatedContainer(
+                                                      duration: const Duration(
+                                                        milliseconds: 200,
+                                                      ),
+                                                      width: 35.sp +
+                                                          (index ==
+                                                                  currentPage -
+                                                                      1
+                                                              ? 12.w
+                                                              : 0),
+                                                      child: type.name ==
+                                                              PhotoType
+                                                                  .network.name
+                                                          ? CachedNetworkImage(
+                                                              imageUrl:
+                                                                  images[index],
+                                                              httpHeaders:
+                                                                  httpHeaders,
+                                                              height: 45.sp,
+                                                              fit: BoxFit.cover,
+                                                              errorWidget:
+                                                                  errorWidget,
+                                                            )
+                                                          : type.name ==
+                                                                  PhotoType
+                                                                      .asset
+                                                                      .name
+                                                              ? Image.asset(
+                                                                  images[index],
+                                                                  height: 45.sp,
+                                                                  fit: BoxFit
+                                                                      .cover,
+                                                                )
+                                                              : Image.file(
+                                                                  File(images[
+                                                                      index]),
+                                                                  height: 45.sp,
+                                                                  fit: BoxFit
+                                                                      .cover,
+                                                                ),
+                                                    ),
+                                                  ),
+                                                ));
                                           }),
                                           SizedBox(
                                             width: fullWidth / 2 - 23.5.w,

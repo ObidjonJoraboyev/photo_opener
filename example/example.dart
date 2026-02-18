@@ -20,14 +20,13 @@ class App extends StatelessWidget {
           child: GestureDetector(
             onTap: () {
               onOpenPhoto(
-                context: context,
-                images: [
-                  "asset/image1.png",
-                  "asset/image2.png",
-                  "asset/image3.png",
-                ],
-                isNetwork: false,
-              );
+                  context: context,
+                  images: [
+                    "asset/image1.png",
+                    "asset/image2.png",
+                    "asset/image3.png",
+                  ],
+                  type: PhotoType.asset);
             },
             child: const Text("OpenImage"),
           ),

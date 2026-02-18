@@ -1,3 +1,17 @@
+## 0.2.8 - 2026-02-18
+### Added
+Introduce `PhotoType` and support local file images
+
+- Add `PhotoType` enum with `network`, `asset`, and `file` options for better type safety.
+- Replace `isNetwork` boolean with `type` parameter in `onOpenPhoto`.
+- Implement support for `FileImage` and `Image.file` to allow viewing local device images.
+- Update `imageProvider` logic in `PhotoViewGalleryPageOptions` to handle all supported photo types.
+- Refactor image loading in the thumbnail preview list to support `PhotoType`.
+
+
+
+
+
 ## 0.2.7 - 2026-02-03
 ### Added
 - Support for an optional **httpHeaders** parameter to pass headers for network images downloading.
