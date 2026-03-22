@@ -1,0 +1,12 @@
+name: photo_opener_example
+description: Example app for the photo_opener package.
+publish_to: 'none'
+
+environment:
+  sdk: ^3.5.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+  photo_opener:
+    path: ../

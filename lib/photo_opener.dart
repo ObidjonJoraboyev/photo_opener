@@ -1,11 +1,14 @@
-import 'dart:io';
+import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
+
+import 'src/io_stub.dart' if (dart.library.io) 'src/io_io.dart' as io;
 
 import 'extensions/screen_util.dart';
 
@@ -198,16 +201,30 @@ void onOpenPhoto({
                           },
                           scrollPhysics: const BouncingScrollPhysics(),
                           builder: (BuildContext context, int index) {
+                            ImageProvider imageProvider;
+                            if (type == PhotoType.asset) {
+                              imageProvider = AssetImage(images[index]);
+                            } else if (type == PhotoType.network) {
+                              imageProvider = CachedNetworkImageProvider(
+                                images[index],
+                                headers: httpHeaders,
+                              );
+                            } else {
+                              // File type is not supported on web - show transparent placeholder
+                              if (kIsWeb) {
+                                imageProvider = MemoryImage(
+                                  base64Decode(
+                                    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=',
+                                  ),
+                                );
+                              } else {
+                                imageProvider =
+                                    io.getFileImageProvider(images[index]);
+                              }
+                            }
                             return PhotoViewGalleryPageOptions(
                               scaleStateController: photoController,
-                              imageProvider: type.name == PhotoType.asset.name
-                                  ? AssetImage(images[index])
-                                  : type.name == PhotoType.network.name
-                                      ? CachedNetworkImageProvider(
-                                          images[index],
-                                          headers: httpHeaders,
-                                        )
-                                      : FileImage(File(images[index])),
+                              imageProvider: imageProvider,
                               maxScale: PhotoViewComputedScale.contained *
                                   (maxScale ?? 5),
                               initialScale:
@@ -257,7 +274,7 @@ void onOpenPhoto({
                                   ),
                                   padding: EdgeInsets.only(
                                     top: MediaQuery.of(context).padding.top +
-                                        (Platform.isAndroid ? 10.h : 0),
+                                        (io.isAndroid ? 10.h : 0),
                                     left: leftPadding ?? 21.w,
                                     right: 21.w,
                                     bottom: 5.h,
@@ -309,7 +326,7 @@ void onOpenPhoto({
                                 child: Container(
                                   padding: EdgeInsets.only(
                                     top: MediaQuery.of(context).padding.top +
-                                        (Platform.isAndroid ? 10.h : 0),
+                                        (io.isAndroid ? 10.h : 0),
                                     left: 21.w,
                                     right: 21.w,
                                     bottom: 5.h,
@@ -357,7 +374,7 @@ void onOpenPhoto({
                                       bottom: MediaQuery.of(
                                             context,
                                           ).padding.bottom +
-                                          (Platform.isAndroid ? 10.h : 0),
+                                          (io.isAndroid ? 10.h : 0),
                                       left: 0.w,
                                       right: 0.w,
                                       top: 8.h,
@@ -428,12 +445,10 @@ void onOpenPhoto({
                                                                   fit: BoxFit
                                                                       .cover,
                                                                 )
-                                                              : Image.file(
-                                                                  File(images[
-                                                                      index]),
-                                                                  height: 45.sp,
-                                                                  fit: BoxFit
-                                                                      .cover,
+                                                              : io.buildFileThumbnail(
+                                                                  images[index],
+                                                                  45.sp,
+                                                                  BoxFit.cover,
                                                                 ),
                                                     ),
                                                   ),

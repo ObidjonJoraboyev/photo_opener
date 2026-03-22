@@ -1,3 +1,18 @@
+## 0.2.9 - 2026-03-22
+### Added
+- Web platform support with conditional imports (no dart:io on web)
+- Installation and Quick Start sections in README
+- Platform support table and improved pub.dev documentation
+
+### Fixed
+- Web compatibility: use `io_stub`/`io_io` for Platform and File
+- Screen util fallback when width/height not yet initialized
+- Example app structure (proper pubspec, lib/main.dart)
+- README examples (type: PhotoType, remove debug print, fix MaterialApp)
+
+### Changed
+- Exclude gif/ from published package via .pubignore (reduces package size)
+
 ## 0.2.8 - 2026-02-18
 ### Added
 Introduce `PhotoType` and support local file images

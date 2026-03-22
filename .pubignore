@@ -1,0 +1,2 @@
+# Exclude large demo assets from published package
+gif/

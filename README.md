@@ -1,173 +1,149 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# 📸 Photo Opener
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
+A Flutter package for a **Telegram-style full-screen image viewer**. Open images with smooth pinch-to-zoom, swipe navigation, thumbnails, and swipe-down-to-dismiss—ready to use with a single function call.
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
+**Supports:** network URLs • local assets • device files • web (assets & network only)
 
-
-## 📸 Photo Opener
-A Flutter package to open and zoom images with smooth gestures and customizable UI.
-Perfect for displaying images in full-screen mode with pinch-to-zoom functionality.
+---
 
 ## ✨ Features
-🖼 Open images in a full-screen viewer
 
-🔍 Zoom in/out with smooth pinch gestures
+- 🖼 **Full-screen viewer** — Immersive image viewing
+- 🔍 **Pinch to zoom** — Smooth gestures with configurable min/max scale
+- 📜 **Gallery mode** — Swipe between multiple images
+- 👆 **Swipe down to dismiss** — Natural closing gesture (when not zoomed)
+- 🖱 **Tap to toggle UI** — Show/hide header, footer, and thumbnails
+- 🎨 **Customizable** — Colors, padding, close button, loader, error widget
+- 📱 **Platform support** — Android, iOS, Web, Windows, macOS, Linux
 
-🌈 Customizable colors, paddings, and styles
-
-📜 Support for multiple images with swipe
-
-🌐 Works with local assets or network images
-
+---
 
 ## 📷 Preview
 
 ![Demo](https://raw.githubusercontent.com/ObidjonJoraboyev/photo_opener/main/gif/example.gif)
 
+*Run the [example](example) app to see the viewer in action.*
 
+---
 
-## 📖 Usage
+## 🚀 Installation
 
-```dart
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:photo_opener/photo_opener.dart';
+Add to your `pubspec.yaml`:
 
-class PhotoOpenerExample extends StatefulWidget {
-  const PhotoOpenerExample({super.key});
-
-  @override
-  State<PhotoOpenerExample> createState() => _PhotoOpenerExampleState();
-}
-
-class _PhotoOpenerExampleState extends State<PhotoOpenerExample> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Example Photo Opener"),
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          GestureDetector(
-            onTap: () {
-              PageController pageController = PageController();
-              onOpenPhoto(
-                context: context,
-                closeText: "Back",
-                secondaryColor: Colors.black,
-                backgroundColor: Colors.black,
-                pageController: pageController,
-                onPageChange: (newPage) {},
-                minScale: 1,
-                maxScale: 5,
-                loaderColor: Colors.red,
-                leftPadding: 20,
-                isNetwork: false,
-                initialIndex: 2,
-                topTextStyle: const TextStyle(
-                  color: CupertinoColors.white,
-                  fontWeight: FontWeight.w600,
-                ),
-                images: [
-                  "assets/images/example_1.png",
-                  "assets/images/example_2.png",
-                  "assets/images/example_3.png",
-                ],
-              );
-            },
-            child: Center(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(24),
-                child: Image.asset(
-                  "assets/images/example_1.png",
-                  width: 300,
-                  height: 300,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
+```yaml
+dependencies:
+  photo_opener: ^0.2.8
 ```
-If you need to use JWT Token for authorization to load image, you can use httpHeaders parameter with bearer token. It is a map of headers.
 
-Moreover, if you need to show a custom error widget at the bottom if image loading fails, you can use errorWidget parameter. 
-It is a widget that will be shown at the bottom of the screen.
+Or use:
 
-See both example below:
+```bash
+flutter pub add photo_opener
+```
+
+---
+
+## 📖 Quick Start
+
+Minimal example—open a gallery with one line:
 
 ```dart
 import 'package:flutter/material.dart';
 import 'package:photo_opener/photo_opener.dart';
 
-void main() {
-  runApp(MaterialApp(home: App()));
-}
-
-class App extends StatelessWidget {
-  const App({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: GestureDetector(
-            onTap: () {
-              print('Photo opened successfully!');
-              onOpenPhoto(
-                context: context,
-                initialIndex: 1,
-                images: [
-                  'https://notworkurl-image.com',
-                  'https://picsum.photos/id/1/1024/768',
-                  'https://picsum.photos/id/2/1024/768',
-                  'https://picsum.photos/id/3/1024/768',
-                  'https://picsum.photos/id/4/1024/768',
-                  'https://notworkurl-image.com',
-                ],
-                httpHeaders: {
-                  'Authorization':
-                  'Bearer your_token_here'
-                },
-                isNetwork: true,
-                errorWidget: (context, url, error) =>  Icon(Icons.broken_image, size: 32,color: Colors.white70,),
-              ); //End of onOpenPhoto
-            },
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(24),
-              child: Image.network(
-                'https://picsum.photos/id/1/1024/768',
-                width: 300,
-                height: 300,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
+// Inside your widget (e.g. onTap of an image):
+onOpenPhoto(
+  context: context,
+  images: [
+    'https://picsum.photos/id/1/1024/768',
+    'https://picsum.photos/id/2/1024/768',
+  ],
+  type: PhotoType.network,
+);
 ```
+
+---
+
+## 📖 Full Example (Assets)
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:photo_opener/photo_opener.dart';
+
+onOpenPhoto(
+  context: context,
+  images: [
+    'assets/images/photo1.png',
+    'assets/images/photo2.png',
+    'assets/images/photo3.png',
+  ],
+  type: PhotoType.asset,
+  initialIndex: 1,
+  closeText: 'Back',
+  minScale: 1,
+  maxScale: 5,
+);
+```
+
+---
+
+## 🔐 Authorization (JWT / Bearer Token)
+
+Pass headers for authenticated image URLs:
+
+```dart
+onOpenPhoto(
+  context: context,
+  images: imageUrls,
+  type: PhotoType.network,
+  httpHeaders: {
+    'Authorization': 'Bearer your_token_here',
+  },
+);
+```
+
+---
+
+## ⚠️ Error Handling
+
+Show a custom widget when image loading fails (e.g. in thumbnails):
+
+```dart
+onOpenPhoto(
+  context: context,
+  images: imageUrls,
+  type: PhotoType.network,
+  errorWidget: (context, url, error) => Icon(
+    Icons.broken_image,
+    size: 32,
+    color: Colors.white70,
+  ),
+);
+```
+
+---
+
+## 📱 Platform Notes
+
+| Platform  | Network | Assets | Local Files |
+|-----------|---------|--------|-------------|
+| Android   | ✅      | ✅     | ✅          |
+| iOS       | ✅      | ✅     | ✅          |
+| Web       | ✅      | ✅     | ❌          |
+| Desktop   | ✅      | ✅     | ✅          |
+
+**Web:** Use `PhotoType.network` or `PhotoType.asset`. `PhotoType.file` is not supported on web.
+
+---
 
 ## 📜 License
-This package is licensed under the MIT License.
-Feel free to use it in your projects.
 
+MIT License — use freely in your projects.
 
+---
+
+## 🤝 Links
+
+- [GitHub](https://github.com/ObidjonJoraboyev/photo_opener)
+- [Issues](https://github.com/ObidjonJoraboyev/photo_opener/issues)
+- [pub.dev](https://pub.dev/packages/photo_opener)
