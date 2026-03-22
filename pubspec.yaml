@@ -12,9 +12,7 @@ topics:
   - gallery
   - viewer
   - zoom
-  - photos
   - fullscreen
-  - media-viewer
 
 environment:
   sdk: ^3.5.4
