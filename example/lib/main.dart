@@ -26,17 +26,18 @@ class App extends StatelessWidget {
           backgroundColor: Colors.white,
           title: const Text('Photo Opener Example')),
       body: Center(
-        child: GestureDetector(
-          onTap: () {
-            onOpenPhoto(
-              context: context,
-              images: imageList,
-              type: PhotoType.network,
-            );
-          },
-          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            ...List.generate(3, (index) {
-              return Padding(
+        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+          ...List.generate(3, (index) {
+            return GestureDetector(
+              onTap: () {
+                onOpenPhoto(
+                    context: context,
+                    images: imageList,
+                    type: PhotoType.network,
+                    initialIndex:index
+                );
+              },
+              child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12.r),
@@ -47,10 +48,10 @@ class App extends StatelessWidget {
                     height: 85,
                   ),
                 ),
-              );
-            })
-          ]),
-        ),
+              ),
+            );
+          })
+        ]),
       ),
     );
   }

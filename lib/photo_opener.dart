@@ -189,6 +189,36 @@ class _PhotoOpenerDialogState extends State<_PhotoOpenerDialog> {
     return page * (38.sp + (12.w / length));
   }
 
+  static const _thumbAnimDuration = Duration(milliseconds: 300);
+
+  void _scrollThumbnailsToPage(int page, {required int fromIndex}) {
+    if (!_scrollController.hasClients) return;
+
+    if (fromIndex < page) {
+      final target = _thumbOffsetForPage(page);
+      final maxExtent = _scrollController.position.maxScrollExtent;
+      _scrollController.animateTo(
+        target < maxExtent ? target : maxExtent,
+        duration: _thumbAnimDuration,
+        curve: Curves.easeInOut,
+      );
+    } else if (fromIndex > page) {
+      final target = _thumbOffsetForPage(page);
+      final minExtent = _scrollController.position.minScrollExtent;
+      _scrollController.animateTo(
+        target > minExtent ? target : minExtent,
+        duration: _thumbAnimDuration,
+        curve: Curves.easeInOut,
+      );
+    } else {
+      _scrollController.animateTo(
+        _scrollController.position.minScrollExtent,
+        duration: _thumbAnimDuration,
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
   ImageProvider _imageProviderForIndex(int index) {
     final urlOrPath = widget.images[index];
     if (widget.type == PhotoType.asset) {
@@ -284,56 +314,12 @@ class _PhotoOpenerDialogState extends State<_PhotoOpenerDialog> {
                   height: _fullHeight,
                   child: PhotoViewGallery.builder(
                     pageController: _pageCtrl,
-                    onPageChanged: (v) async {
-                      if (_scrollController.positions.isNotEmpty) {
-                        if (_currentIndex < v) {
-                          final target = _thumbOffsetForPage(v);
-                          final maxExtent =
-                              _scrollController.position.maxScrollExtent;
-                          if (target < maxExtent) {
-                            await _scrollController.animateTo(
-                              target,
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeInOut,
-                            );
-                          } else {
-                            await _scrollController.animateTo(
-                              maxExtent,
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeInOut,
-                            );
-                          }
-                        } else if (_currentIndex > v) {
-                          final target = _thumbOffsetForPage(v);
-                          final minExtent =
-                              _scrollController.position.minScrollExtent;
-                          if (target > minExtent) {
-                            await _scrollController.animateTo(
-                              target,
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeInOut,
-                            );
-                          } else {
-                            await _scrollController.animateTo(
-                              minExtent,
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeInOut,
-                            );
-                          }
-                        }
-
-                        if (v == _currentIndex) {
-                          await _scrollController.animateTo(
-                            _scrollController.position.minScrollExtent,
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                          );
-                        }
-                      }
-
+                    onPageChanged: (v) {
+                      final previousIndex = _currentIndex;
                       _currentPage = v + 1;
                       _currentIndex = v;
                       setState(() {});
+                      _scrollThumbnailsToPage(v, fromIndex: previousIndex);
                       _photoController.reset();
                       widget.onPageChange?.call(v);
                     },
@@ -523,9 +509,8 @@ class _PhotoOpenerDialogState extends State<_PhotoOpenerDialog> {
                                             borderRadius:
                                                 BorderRadius.circular(4.r),
                                             child: AnimatedContainer(
-                                              duration: const Duration(
-                                                milliseconds: 200,
-                                              ),
+                                              duration: _thumbAnimDuration,
+                                              curve: Curves.easeInOut,
                                               width: 35.sp +
                                                   (index == _currentPage - 1
                                                       ? 12.w
