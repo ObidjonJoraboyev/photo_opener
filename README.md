@@ -6,6 +6,14 @@ A Flutter package for a **Telegram-style full-screen image viewer**. Open images
 
 ---
 
+## 📷 Preview
+
+![Demo](https://raw.githubusercontent.com/ObidjonJoraboyev/photo_opener/main/gif/example.gif)
+
+*Run the [example](example) app to see the viewer in action.*
+
+---
+
 ## ✨ Features
 
 - 🖼 **Full-screen viewer** — Immersive image viewing
@@ -15,14 +23,6 @@ A Flutter package for a **Telegram-style full-screen image viewer**. Open images
 - 🖱 **Tap to toggle UI** — Show/hide header, footer, and thumbnails
 - 🎨 **Customizable** — Colors, padding, close button, loader, error widget
 - 📱 **Platform support** — Android, iOS, Web, Windows, macOS, Linux
-
----
-
-## 📷 Preview
-
-![Demo](https://raw.githubusercontent.com/ObidjonJoraboyev/photo_opener/main/gif/example.gif)
-
-*Run the [example](example) app to see the viewer in action.*
 
 ---
 
