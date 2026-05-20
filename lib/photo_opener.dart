@@ -127,6 +127,7 @@ class _PhotoOpenerDialogState extends State<_PhotoOpenerDialog> {
   bool _didInit = false;
 
   double get _fullHeight => MediaQuery.sizeOf(context).height;
+
   double get _fullWidth => MediaQuery.sizeOf(context).width;
 
   _PhotoOpenerDialogState();
@@ -274,8 +275,7 @@ class _PhotoOpenerDialogState extends State<_PhotoOpenerDialog> {
                   Navigator.pop(context);
                 },
                 direction: _scaleState == PhotoViewScaleState.initial ||
-                        _scaleState ==
-                            PhotoViewScaleState.originalSize ||
+                        _scaleState == PhotoViewScaleState.originalSize ||
                         _scaleState == PhotoViewScaleState.covering
                     ? DismissDirection.vertical
                     : DismissDirection.none,
@@ -288,7 +288,8 @@ class _PhotoOpenerDialogState extends State<_PhotoOpenerDialog> {
                       if (_scrollController.positions.isNotEmpty) {
                         if (_currentIndex < v) {
                           final target = _thumbOffsetForPage(v);
-                          final maxExtent = _scrollController.position.maxScrollExtent;
+                          final maxExtent =
+                              _scrollController.position.maxScrollExtent;
                           if (target < maxExtent) {
                             await _scrollController.animateTo(
                               target,
@@ -304,7 +305,8 @@ class _PhotoOpenerDialogState extends State<_PhotoOpenerDialog> {
                           }
                         } else if (_currentIndex > v) {
                           final target = _thumbOffsetForPage(v);
-                          final minExtent = _scrollController.position.minScrollExtent;
+                          final minExtent =
+                              _scrollController.position.minScrollExtent;
                           if (target > minExtent) {
                             await _scrollController.animateTo(
                               target,
@@ -387,7 +389,9 @@ class _PhotoOpenerDialogState extends State<_PhotoOpenerDialog> {
                           child: Container(
                             color: (widget.secondaryColor ?? Colors.black)
                                 .withAlpha(
-                              ((_barrierColor > 0.99 ? 0.5 : _barrierColor / 2) *
+                              ((_barrierColor > 0.99
+                                          ? 0.5
+                                          : _barrierColor / 2) *
                                       255)
                                   .toInt(),
                             ),
@@ -408,9 +412,10 @@ class _PhotoOpenerDialogState extends State<_PhotoOpenerDialog> {
                                       },
                                       child: Row(
                                         children: [
-                                          const Icon(
-                                            CupertinoIcons.back,
-                                            color: CupertinoColors.white,
+                                          Icon(
+                                            Icons.arrow_back_ios,
+                                            color: Colors.white,
+                                            size: 18.sp,
                                           ),
                                           Text(
                                             widget.closeText ?? "Back",
@@ -478,7 +483,9 @@ class _PhotoOpenerDialogState extends State<_PhotoOpenerDialog> {
                               width: _fullWidth,
                               color: (widget.secondaryColor ?? Colors.black)
                                   .withAlpha(
-                                ((_barrierColor > 0.99 ? 0.5 : _barrierColor / 2) *
+                                ((_barrierColor > 0.99
+                                            ? 0.5
+                                            : _barrierColor / 2) *
                                         255)
                                     .toInt(),
                               ),
@@ -499,7 +506,8 @@ class _PhotoOpenerDialogState extends State<_PhotoOpenerDialog> {
                                     SizedBox(
                                       width: _fullWidth / 2 - 23.5.w,
                                     ),
-                                    ...List.generate(widget.images.length, (index) {
+                                    ...List.generate(widget.images.length,
+                                        (index) {
                                       return Padding(
                                         padding: EdgeInsets.symmetric(
                                           horizontal: 2.w,
@@ -522,7 +530,8 @@ class _PhotoOpenerDialogState extends State<_PhotoOpenerDialog> {
                                                   (index == _currentPage - 1
                                                       ? 12.w
                                                       : 0),
-                                              child: _buildThumbnailChild(index),
+                                              child:
+                                                  _buildThumbnailChild(index),
                                             ),
                                           ),
                                         ),
