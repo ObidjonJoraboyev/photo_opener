@@ -502,7 +502,7 @@ class _PhotoOpenerDialogState extends State<_PhotoOpenerDialog> {
                                       curve: Curves.easeInOut,
                                       width: 35.sp +
                                           (index == _currentPage - 1
-                                              ?12.w
+                                              ? 12.w
                                               : 0),
                                       child: _buildThumbnailChild(index),
                                     ),

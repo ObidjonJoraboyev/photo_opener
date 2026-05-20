@@ -34,8 +34,7 @@ class App extends StatelessWidget {
                     context: context,
                     images: imageList,
                     type: PhotoType.network,
-                    initialIndex:index
-                );
+                    initialIndex: index);
               },
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
