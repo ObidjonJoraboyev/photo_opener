@@ -397,7 +397,7 @@ class _PhotoOpenerDialogState extends State<_PhotoOpenerDialog> {
                           (io.isAndroid ? 10.h : 0),
                       left: widget.leftPadding ?? 21.w,
                       right: 21.w,
-                      bottom: 5.h,
+                      bottom: 10.h,
                     ),
                     child: widget.closeButton ??
                         Row(

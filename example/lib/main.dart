@@ -37,7 +37,7 @@ class App extends StatelessWidget {
                     initialIndex: index);
               },
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(6.0),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12.r),
                   child: Image.network(
