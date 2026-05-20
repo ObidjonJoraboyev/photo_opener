@@ -1,3 +1,9 @@
+## 0.3.2 - 2026-05-20
+
+### Fixed
+- Web/WASM pub score: load `cached_network_image` only on IO platforms via conditional imports; web uses `NetworkImage` / `Image.network`
+- Declare supported platforms explicitly in `pubspec.yaml`
+
 ## 0.3.1 - 2026-05-20
 
 ### Added

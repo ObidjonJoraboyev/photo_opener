@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
@@ -9,6 +8,8 @@ import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 
 import 'src/io_stub.dart' if (dart.library.io) 'src/io_io.dart' as io;
+import 'src/network_stub.dart' if (dart.library.io) 'src/network_io.dart'
+    as network;
 
 import 'extensions/screen_util.dart';
 
@@ -248,7 +249,10 @@ class _PhotoOpenerDialogState extends State<_PhotoOpenerDialog> {
       return AssetImage(urlOrPath);
     }
     if (widget.type == PhotoType.network) {
-      return CachedNetworkImageProvider(urlOrPath, headers: widget.httpHeaders);
+      return network.networkImageProvider(
+        urlOrPath,
+        headers: widget.httpHeaders,
+      );
     }
 
     // PhotoType.file
@@ -513,18 +517,12 @@ class _PhotoOpenerDialogState extends State<_PhotoOpenerDialog> {
 
   Widget _buildThumbnailChild(int index) {
     if (widget.type == PhotoType.network) {
-      return CachedNetworkImage(
-        imageUrl: widget.images[index],
-        httpHeaders: widget.httpHeaders,
+      return network.buildNetworkThumbnail(
+        url: widget.images[index],
+        headers: widget.httpHeaders,
         height: 45.sp,
         fit: BoxFit.cover,
-        errorWidget: (context, url, error) {
-          final callback = widget.errorWidget;
-          if (callback != null) {
-            return callback(context, url, error);
-          }
-          return const SizedBox.shrink();
-        },
+        errorWidget: widget.errorWidget,
       );
     }
 

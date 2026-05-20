@@ -2,7 +2,7 @@ name: photo_opener
 description: >
   Telegram-style full-screen image viewer for Flutter. Pinch to zoom, swipe between
   images, thumbnails, swipe-down to dismiss. Supports network, assets, and local files.
-version: 0.3.1
+version: 0.3.2
 homepage: https://github.com/ObidjonJoraboyev/photo_opener
 repository: https://github.com/ObidjonJoraboyev/photo_opener
 issue_tracker: https://github.com/ObidjonJoraboyev/photo_opener/issues
@@ -13,6 +13,14 @@ topics:
   - viewer
   - zoom
   - fullscreen
+
+platforms:
+  android:
+  ios:
+  web:
+  windows:
+  linux:
+  macos:
 
 environment:
   sdk: ^3.5.4
