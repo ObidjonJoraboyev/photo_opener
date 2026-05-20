@@ -1,17 +1,30 @@
-# photo_opener_example
+# Photo Opener — Example App
 
-A new Flutter project.
+Demo app for the [`photo_opener`](../) package. Shows a row of network image previews; tap one to open the full-screen viewer at that index.
 
-## Getting Started
+## Run
 
-This project is a starting point for a Flutter application.
+From this directory:
 
-A few resources to get you started if this is your first Flutter project:
+```bash
+flutter pub get
+flutter run
+```
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+Or from the repo root:
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```bash
+cd example && flutter run
+```
+
+## What it demonstrates
+
+- **`onOpenPhoto`** with `PhotoType.network` and a list of Picsum URLs
+- **`initialIndex`** — each preview opens the gallery on the tapped image
+- Thumbnail strip, pinch-to-zoom, swipe between images, swipe-down to dismiss
+
+See [`lib/main.dart`](lib/main.dart) for the full source (~60 lines).
+
+## Package docs
+
+API reference, customization options, and asset/file examples: [main README](../README.md).
