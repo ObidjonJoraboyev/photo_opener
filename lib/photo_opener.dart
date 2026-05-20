@@ -500,9 +500,9 @@ class _PhotoOpenerDialogState extends State<_PhotoOpenerDialog> {
                                           ? _thumbAnimDuration
                                           : Duration.zero,
                                       curve: Curves.easeInOut,
-                                      width: 20.sp +
+                                      width: 35.sp +
                                           (index == _currentPage - 1
-                                              ? 8.w
+                                              ?12.w
                                               : 0),
                                       child: _buildThumbnailChild(index),
                                     ),
@@ -532,7 +532,7 @@ class _PhotoOpenerDialogState extends State<_PhotoOpenerDialog> {
       return CachedNetworkImage(
         imageUrl: widget.images[index],
         httpHeaders: widget.httpHeaders,
-        height: 35.sp,
+        height: 45.sp,
         fit: BoxFit.cover,
         errorWidget: (context, url, error) {
           final callback = widget.errorWidget;
@@ -547,7 +547,7 @@ class _PhotoOpenerDialogState extends State<_PhotoOpenerDialog> {
     if (widget.type == PhotoType.asset) {
       return Image.asset(
         widget.images[index],
-        height: 35.sp,
+        height: 45.sp,
         fit: BoxFit.cover,
       );
     }
@@ -555,7 +555,7 @@ class _PhotoOpenerDialogState extends State<_PhotoOpenerDialog> {
     // File thumbnails (supported on non-web).
     return io.buildFileThumbnail(
       widget.images[index],
-      35.sp,
+      45.sp,
       BoxFit.cover,
     );
   }
