@@ -13,9 +13,9 @@ class App extends StatelessWidget {
   App({super.key});
 
   final imageList = [
-    'https://picsum.photos/id/1/1024/768',
-    'https://picsum.photos/id/2/1024/768',
-    'https://picsum.photos/id/3/1024/768',
+    'https://picsum.photos/seed/mp03/800/800',
+    'https://picsum.photos/seed/mp04/800/800',
+    'https://picsum.photos/seed/mp05/800/800',
   ];
 
   @override

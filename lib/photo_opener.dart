@@ -113,7 +113,7 @@ class _PhotoOpenerDialogState extends State<_PhotoOpenerDialog> {
   late final PageController _pageCtrl;
   bool _ownsPageController = true;
 
-  final ScrollController _scrollController = ScrollController();
+  ScrollController? _scrollController;
 
   SystemUiMode _lastMode = SystemUiMode.edgeToEdge;
   double _barrierColor = 1;
@@ -124,7 +124,8 @@ class _PhotoOpenerDialogState extends State<_PhotoOpenerDialog> {
   late int _currentIndex;
   late int _currentPage;
 
-  bool _didInit = false;
+  /// False while opening at [initialIndex] > 0 so thumbnails appear ready.
+  late bool _thumbAnimationsEnabled;
 
   double get _fullHeight => MediaQuery.sizeOf(context).height;
 
@@ -139,6 +140,7 @@ class _PhotoOpenerDialogState extends State<_PhotoOpenerDialog> {
     final maxIndex = widget.images.isEmpty ? 0 : widget.images.length - 1;
     _currentIndex = widget.initialIndex.clamp(0, maxIndex);
     _currentPage = _currentIndex + 1;
+    _thumbAnimationsEnabled = _currentIndex == 0;
 
     if (widget.pageController == null) {
       _pageCtrl = PageController(initialPage: _currentIndex);
@@ -150,27 +152,35 @@ class _PhotoOpenerDialogState extends State<_PhotoOpenerDialog> {
 
     _photoController.reset();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      if (_didInit) return;
-      _didInit = true;
+    if (!_ownsPageController) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _pageCtrl.jumpToPage(_currentIndex);
+      });
+    }
 
-      // Ensure the desired starting page is selected.
-      _pageCtrl.jumpToPage(_currentIndex);
+    if (_currentIndex > 0) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || _thumbAnimationsEnabled) return;
+        setState(() => _thumbAnimationsEnabled = true);
+      });
+    }
+  }
 
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _thumbOffsetForPage(_currentIndex),
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-        );
-      }
-    });
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    width = MediaQuery.sizeOf(context).width;
+    height = MediaQuery.sizeOf(context).height;
+    _scrollController ??= ScrollController(
+      initialScrollOffset:
+          _currentIndex > 0 ? _thumbOffsetForPage(_currentIndex) : 0,
+    );
   }
 
   @override
   void dispose() {
-    _scrollController.dispose();
+    _scrollController?.dispose();
     if (_ownsPageController) {
       _pageCtrl.dispose();
     }
@@ -190,33 +200,49 @@ class _PhotoOpenerDialogState extends State<_PhotoOpenerDialog> {
   }
 
   static const _thumbAnimDuration = Duration(milliseconds: 300);
+  static const _chromeFadeDuration = Duration(milliseconds: 200);
 
-  void _scrollThumbnailsToPage(int page, {required int fromIndex}) {
-    if (!_scrollController.hasClients) return;
+  double get _chromeOpacity => _isOpen ? _barrierColor : 0.0;
 
+  Widget _chromeFade({required Widget child}) {
+    return AnimatedOpacity(
+      opacity: _chromeOpacity,
+      duration: _chromeFadeDuration,
+      child: IgnorePointer(
+        ignoring: !_isOpen,
+        child: child,
+      ),
+    );
+  }
+
+  double _scrollTargetForPage(int page, {required int fromIndex}) {
     if (fromIndex < page) {
       final target = _thumbOffsetForPage(page);
-      final maxExtent = _scrollController.position.maxScrollExtent;
-      _scrollController.animateTo(
-        target < maxExtent ? target : maxExtent,
-        duration: _thumbAnimDuration,
-        curve: Curves.easeInOut,
-      );
-    } else if (fromIndex > page) {
-      final target = _thumbOffsetForPage(page);
-      final minExtent = _scrollController.position.minScrollExtent;
-      _scrollController.animateTo(
-        target > minExtent ? target : minExtent,
-        duration: _thumbAnimDuration,
-        curve: Curves.easeInOut,
-      );
-    } else {
-      _scrollController.animateTo(
-        _scrollController.position.minScrollExtent,
-        duration: _thumbAnimDuration,
-        curve: Curves.easeInOut,
-      );
+      final maxExtent = _scrollController!.position.maxScrollExtent;
+      return target < maxExtent ? target : maxExtent;
     }
+    if (fromIndex > page) {
+      final target = _thumbOffsetForPage(page);
+      final minExtent = _scrollController!.position.minScrollExtent;
+      return target > minExtent ? target : minExtent;
+    }
+    return _scrollController!.position.minScrollExtent;
+  }
+
+  void _scrollThumbnailsToPage(int page, {required int fromIndex}) {
+    final controller = _scrollController;
+    if (controller == null || !controller.hasClients) return;
+
+    final target = _scrollTargetForPage(page, fromIndex: fromIndex);
+    if (!_thumbAnimationsEnabled) {
+      controller.jumpTo(target);
+      return;
+    }
+    controller.animateTo(
+      target,
+      duration: _thumbAnimDuration,
+      curve: Curves.easeInOut,
+    );
   }
 
   ImageProvider _imageProviderForIndex(int index) {
@@ -282,10 +308,6 @@ class _PhotoOpenerDialogState extends State<_PhotoOpenerDialog> {
             await _setUIMode(
               _isOpen ? SystemUiMode.edgeToEdge : SystemUiMode.immersiveSticky,
             );
-            await Future.delayed(const Duration(milliseconds: 20));
-            if (_scrollController.positions.isNotEmpty && _isOpen) {
-              _scrollController.jumpTo(_thumbOffsetForPage(_currentIndex));
-            }
           },
           child: Stack(
             alignment: Alignment.topCenter,
@@ -362,176 +384,140 @@ class _PhotoOpenerDialogState extends State<_PhotoOpenerDialog> {
                   ),
                 ),
               ),
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 200),
-                transitionBuilder: (child, animation) {
-                  return FadeTransition(opacity: animation, child: child);
-                },
-                child: _isOpen
-                    ? Opacity(
-                        opacity: _barrierColor,
-                        child: Material(
-                          color: Colors.transparent,
-                          child: Container(
-                            color: (widget.secondaryColor ?? Colors.black)
-                                .withAlpha(
-                              ((_barrierColor > 0.99
-                                          ? 0.5
-                                          : _barrierColor / 2) *
-                                      255)
-                                  .toInt(),
-                            ),
-                            padding: EdgeInsets.only(
-                              top: MediaQuery.of(context).padding.top +
-                                  (io.isAndroid ? 10.h : 0),
-                              left: widget.leftPadding ?? 21.w,
-                              right: 21.w,
-                              bottom: 5.h,
-                            ),
-                            child: widget.closeButton ??
-                                Row(
-                                  children: [
-                                    GestureDetector(
-                                      onTap: () {
-                                        widget.onClose?.call();
-                                        Navigator.pop(context);
-                                      },
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.arrow_back_ios,
-                                            color: Colors.white,
-                                            size: 18.sp,
-                                          ),
-                                          Text(
-                                            widget.closeText ?? "Back",
-                                            style: TextStyle(
-                                              color: CupertinoColors.white,
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 14.sp,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                          ),
-                        ),
-                      )
-                    : const SizedBox(),
-              ),
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 200),
-                transitionBuilder: (child, animation) {
-                  return FadeTransition(opacity: animation, child: child);
-                },
-                child: _isOpen
-                    ? Opacity(
-                        opacity: _barrierColor,
-                        child: Material(
-                          color: Colors.transparent,
-                          child: Container(
-                            padding: EdgeInsets.only(
-                              top: MediaQuery.of(context).padding.top +
-                                  (io.isAndroid ? 10.h : 0),
-                              left: 21.w,
-                              right: 21.w,
-                              bottom: 5.h,
-                            ),
-                            child: Text(
-                              "$_currentPage/${widget.images.length}",
-                              style: widget.topTextStyle ??
-                                  TextStyle(
-                                    color: CupertinoColors.white,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 16.sp,
+              _chromeFade(
+                child: Material(
+                  color: Colors.transparent,
+                  child: Container(
+                    color: (widget.secondaryColor ?? Colors.black).withAlpha(
+                      ((_barrierColor > 0.99 ? 0.5 : _barrierColor / 2) * 255)
+                          .toInt(),
+                    ),
+                    padding: EdgeInsets.only(
+                      top: MediaQuery.of(context).padding.top +
+                          (io.isAndroid ? 10.h : 0),
+                      left: widget.leftPadding ?? 21.w,
+                      right: 21.w,
+                      bottom: 5.h,
+                    ),
+                    child: widget.closeButton ??
+                        Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                widget.onClose?.call();
+                                Navigator.pop(context);
+                              },
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.arrow_back_ios,
+                                    color: Colors.white,
+                                    size: 18.sp,
                                   ),
+                                  Text(
+                                    widget.closeText ?? "Back",
+                                    style: TextStyle(
+                                      color: CupertinoColors.white,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 14.sp,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
+                          ],
                         ),
-                      )
-                    : const SizedBox(),
+                  ),
+                ),
+              ),
+              _chromeFade(
+                child: Material(
+                  color: Colors.transparent,
+                  child: Container(
+                    padding: EdgeInsets.only(
+                      top: MediaQuery.of(context).padding.top +
+                          (io.isAndroid ? 10.h : 0),
+                      left: 21.w,
+                      right: 21.w,
+                      bottom: 5.h,
+                    ),
+                    child: Text(
+                      "$_currentPage/${widget.images.length}",
+                      style: widget.topTextStyle ??
+                          TextStyle(
+                            color: CupertinoColors.white,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16.sp,
+                          ),
+                    ),
+                  ),
+                ),
               ),
               Positioned(
                 bottom: 0,
-                child: AnimatedSwitcher(
-                  transitionBuilder: (child, animation) {
-                    return FadeTransition(opacity: animation, child: child);
-                  },
-                  duration: const Duration(milliseconds: 200),
-                  child: _isOpen
-                      ? Opacity(
-                          opacity: _barrierColor,
-                          child: Material(
-                            color: Colors.transparent,
-                            child: Container(
-                              width: _fullWidth,
-                              color: (widget.secondaryColor ?? Colors.black)
-                                  .withAlpha(
-                                ((_barrierColor > 0.99
-                                            ? 0.5
-                                            : _barrierColor / 2) *
-                                        255)
-                                    .toInt(),
-                              ),
-                              padding: EdgeInsets.only(
-                                bottom: MediaQuery.of(context).padding.bottom +
-                                    (io.isAndroid ? 10.h : 0),
-                                left: 0.w,
-                                right: 0.w,
-                                top: 8.h,
-                              ),
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                controller: _scrollController,
-                                physics: const NeverScrollableScrollPhysics(),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    SizedBox(
-                                      width: _fullWidth / 2 - 23.5.w,
-                                    ),
-                                    ...List.generate(widget.images.length,
-                                        (index) {
-                                      return Padding(
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: 2.w,
-                                        ),
-                                        child: GestureDetector(
-                                          onTap: () async {
-                                            await Future.delayed(
-                                              const Duration(milliseconds: 20),
-                                            );
-                                            _pageCtrl.jumpToPage(index);
-                                          },
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(4.r),
-                                            child: AnimatedContainer(
-                                              duration: _thumbAnimDuration,
-                                              curve: Curves.easeInOut,
-                                              width: 35.sp +
-                                                  (index == _currentPage - 1
-                                                      ? 12.w
-                                                      : 0),
-                                              child:
-                                                  _buildThumbnailChild(index),
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    }),
-                                    SizedBox(
-                                      width: _fullWidth / 2 - 23.5.w,
-                                    ),
-                                  ],
-                                ),
-                              ),
+                child: _chromeFade(
+                  child: Material(
+                    color: Colors.transparent,
+                    child: Container(
+                      width: _fullWidth,
+                      color: (widget.secondaryColor ?? Colors.black).withAlpha(
+                        ((_barrierColor > 0.99 ? 0.5 : _barrierColor / 2) * 255)
+                            .toInt(),
+                      ),
+                      padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).padding.bottom +
+                            (io.isAndroid ? 10.h : 0),
+                        left: 0.w,
+                        right: 0.w,
+                        top: 8.h,
+                      ),
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        controller: _scrollController!,
+                        physics: const NeverScrollableScrollPhysics(),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: _fullWidth / 2 - 23.5.w,
                             ),
-                          ),
-                        )
-                      : const SizedBox(),
+                            ...List.generate(widget.images.length, (index) {
+                              return Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 2.w,
+                                ),
+                                child: GestureDetector(
+                                  onTap: () async {
+                                    await Future.delayed(
+                                      const Duration(milliseconds: 20),
+                                    );
+                                    _pageCtrl.jumpToPage(index);
+                                  },
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(4.r),
+                                    child: AnimatedContainer(
+                                      duration: _thumbAnimationsEnabled
+                                          ? _thumbAnimDuration
+                                          : Duration.zero,
+                                      curve: Curves.easeInOut,
+                                      width: 20.sp +
+                                          (index == _currentPage - 1
+                                              ? 8.w
+                                              : 0),
+                                      child: _buildThumbnailChild(index),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }),
+                            SizedBox(
+                              width: _fullWidth / 2 - 23.5.w,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -546,7 +532,7 @@ class _PhotoOpenerDialogState extends State<_PhotoOpenerDialog> {
       return CachedNetworkImage(
         imageUrl: widget.images[index],
         httpHeaders: widget.httpHeaders,
-        height: 45.sp,
+        height: 35.sp,
         fit: BoxFit.cover,
         errorWidget: (context, url, error) {
           final callback = widget.errorWidget;
@@ -561,7 +547,7 @@ class _PhotoOpenerDialogState extends State<_PhotoOpenerDialog> {
     if (widget.type == PhotoType.asset) {
       return Image.asset(
         widget.images[index],
-        height: 45.sp,
+        height: 35.sp,
         fit: BoxFit.cover,
       );
     }
@@ -569,7 +555,7 @@ class _PhotoOpenerDialogState extends State<_PhotoOpenerDialog> {
     // File thumbnails (supported on non-web).
     return io.buildFileThumbnail(
       widget.images[index],
-      45.sp,
+      35.sp,
       BoxFit.cover,
     );
   }
