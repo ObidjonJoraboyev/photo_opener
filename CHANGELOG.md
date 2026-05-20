@@ -1,4 +1,4 @@
-## 0.3.0 - 2026-05-20
+## 0.3.1 - 2026-05-20
 
 ### Added
 - `initialIndex` support: open the gallery on any image with the correct page, counter, and thumbnail strip position

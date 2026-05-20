@@ -208,10 +208,7 @@ class _PhotoOpenerDialogState extends State<_PhotoOpenerDialog> {
     return AnimatedOpacity(
       opacity: _chromeOpacity,
       duration: _chromeFadeDuration,
-      child: IgnorePointer(
-        ignoring: !_isOpen,
-        child: child,
-      ),
+      child: IgnorePointer(ignoring: !_isOpen, child: child),
     );
   }
 
@@ -251,10 +248,7 @@ class _PhotoOpenerDialogState extends State<_PhotoOpenerDialog> {
       return AssetImage(urlOrPath);
     }
     if (widget.type == PhotoType.network) {
-      return CachedNetworkImageProvider(
-        urlOrPath,
-        headers: widget.httpHeaders,
-      );
+      return CachedNetworkImageProvider(urlOrPath, headers: widget.httpHeaders);
     }
 
     // PhotoType.file
@@ -275,11 +269,7 @@ class _PhotoOpenerDialogState extends State<_PhotoOpenerDialog> {
       return Center(child: callback(context, widget.images[index], error));
     }
     return const Center(
-      child: Icon(
-        Icons.broken_image,
-        size: 64,
-        color: Colors.white70,
-      ),
+      child: Icon(Icons.broken_image, size: 64, color: Colors.white70),
     );
   }
 
@@ -478,14 +468,10 @@ class _PhotoOpenerDialogState extends State<_PhotoOpenerDialog> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            SizedBox(
-                              width: _fullWidth / 2 - 23.5.w,
-                            ),
+                            SizedBox(width: _fullWidth / 2 - 23.5.w),
                             ...List.generate(widget.images.length, (index) {
                               return Padding(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 2.w,
-                                ),
+                                padding: EdgeInsets.symmetric(horizontal: 2.w),
                                 child: GestureDetector(
                                   onTap: () async {
                                     await Future.delayed(
@@ -510,9 +496,7 @@ class _PhotoOpenerDialogState extends State<_PhotoOpenerDialog> {
                                 ),
                               );
                             }),
-                            SizedBox(
-                              width: _fullWidth / 2 - 23.5.w,
-                            ),
+                            SizedBox(width: _fullWidth / 2 - 23.5.w),
                           ],
                         ),
                       ),
@@ -553,10 +537,6 @@ class _PhotoOpenerDialogState extends State<_PhotoOpenerDialog> {
     }
 
     // File thumbnails (supported on non-web).
-    return io.buildFileThumbnail(
-      widget.images[index],
-      45.sp,
-      BoxFit.cover,
-    );
+    return io.buildFileThumbnail(widget.images[index], 45.sp, BoxFit.cover);
   }
 }

@@ -5,7 +5,8 @@ bool get isAndroid => false;
 
 /// Throws on web - File paths are not supported. Use network URLs or assets.
 ImageProvider getFileImageProvider(String path) => throw UnsupportedError(
-    'File paths are not supported on web. Use network URLs or assets instead.');
+      'File paths are not supported on web. Use network URLs or assets instead.',
+    );
 
 /// Placeholder for file thumbnails on web (file paths not supported).
 Widget buildFileThumbnail(String path, double height, BoxFit fit) => Container(
